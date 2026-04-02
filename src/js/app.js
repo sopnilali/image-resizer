@@ -228,7 +228,7 @@ AOS.init({
         sumFormat.textContent = getSelectedFormatLabel();
         if (bgMode === 'transparent') {
             sumBg.textContent = selectedMime === 'image/jpeg'
-                ? 'Transparent â†’ white fill for JPEG'
+                ? 'Transparent → white fill for JPEG'
                 : 'Transparent (PNG/WebP)';
         } else {
             sumBg.textContent = bgMode === 'white' ? 'White' : 'Black';
