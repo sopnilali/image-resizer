@@ -583,8 +583,12 @@ AOS.init({
         });
     }
 
-    function appendResultRow(tbody, fileName, nw, nh, tw, th, formatText) {
+    function appendResultRow(tbody, serialNo, fileName, nw, nh, tw, th, formatText) {
         const tr = document.createElement('tr');
+
+        const tdSerial = document.createElement('td');
+        tdSerial.className = 'text-center dim-muted small';
+        tdSerial.textContent = String(serialNo);
 
         const tdName = document.createElement('td');
         tdName.className = 'col-name';
@@ -638,6 +642,7 @@ AOS.init({
         });
         tdDl.appendChild(downloadBtn);
 
+        tr.appendChild(tdSerial);
         tr.appendChild(tdName);
         tr.appendChild(tdOrig);
         tr.appendChild(tdNew);
@@ -680,6 +685,7 @@ AOS.init({
 
                 const { formatEl, statusEl, downloadBtn } = appendResultRow(
                     resultsTbody,
+                    i + 1,
                     file.name,
                     nw,
                     nh,
