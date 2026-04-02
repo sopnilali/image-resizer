@@ -1133,6 +1133,74 @@
             max-width: 46rem;
         }
 
+        .image-resizer-footer .footer-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            gap: 2.25rem;
+            align-items: start;
+        }
+
+        @media (max-width: 991.98px) {
+            .image-resizer-footer .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .image-resizer-footer .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        .image-resizer-footer .footer-col {
+            min-width: 0;
+        }
+
+        .image-resizer-footer .footer-col-title-underline {
+            position: relative;
+            padding-bottom: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-resizer-footer .footer-col-title-underline::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 46px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--image-resizer-accent) 0%, rgba(168, 85, 247, 0.95) 100%);
+        }
+
+        .image-resizer-footer .footer-social {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.05rem;
+        }
+
+        .image-resizer-footer .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(71, 85, 105, 0.55);
+            background: rgba(0, 0, 0, 0.22);
+            color: rgba(241, 245, 249, 0.95);
+            transition: transform 0.15s, border-color 0.2s, background 0.2s;
+        }
+
+        .image-resizer-footer .footer-social a:hover {
+            transform: translateY(-1px);
+            border-color: rgba(99, 102, 241, 0.55);
+            background: rgba(99, 102, 241, 0.12);
+        }
+
         .image-resizer-footer .footer-right-heading {
             color: #fff;
             font-weight: 900;
@@ -1734,31 +1802,65 @@
 
         <footer class="image-resizer-footer" data-aos="fade-up">
             <div class="container">
-                <div class="footer-two-col">
-                    <div class="footer-left-info">
+                <div class="footer-grid">
+                    <div class="footer-col footer-left-info">
                         <div class="d-flex align-items-center gap-3 mb-2">
                             <span class="image-resizer-logo-icon" aria-hidden="true"><i class="bx bx-image-alt"></i></span>
                             <div>
                                 <div class="fw-bold text-white" style="letter-spacing: -0.02em;">ImageResizer</div>
-                                <div class="small" style="color: var(--image-resizer-text-muted);">Client-side pixel resizing (no external APIs)</div>
+                                <div class="small" style="color: var(--image-resizer-text-muted);">Pixel-perfect resizing on your device</div>
                             </div>
+                        </div>
+
+                        <p class="footer-desc mb-0 mt-2">
+                            <i class="bx bx-check-shield me-1" style="color: var(--image-resizer-success);"></i>
+                            100% client-side. No external APIs — files never leave your browser.
+                        </p>
+
+                        <div class="footer-social" aria-label="Social links">
+                            <a href="#" aria-label="Twitter">
+                                <i class="bx bxl-twitter" aria-hidden="true"></i>
+                            </a>
+                            <a href="#" aria-label="LinkedIn">
+                                <i class="bx bxl-linkedin" aria-hidden="true"></i>
+                            </a>
                         </div>
                     </div>
 
-                    <div>
-                        <div class="footer-right-heading">Tools</div>
+                    <div class="footer-col">
+                        <div class="footer-col-title footer-col-title-underline">Quick Links</div>
                         <div class="footer-tools">
                             <a class="footer-link" href="#upload-section"><i class="bx bx-upload"></i>Resize</a>
-                            <a class="footer-link" href="#tab-pixels"><i class="bx bx-grid-alt"></i>By pixels</a>
-                            <a class="footer-link" href="#advanced-panel"><i class="bx bx-cog"></i>Advanced</a>
                             <a class="footer-link" href="#results-section"><i class="bx bx-download"></i>Export queue</a>
+                            <a class="footer-link" href="#advanced-panel"><i class="bx bx-cog"></i>Advanced</a>
+                        </div>
+                    </div>
+
+                    <div class="footer-col">
+                        <div class="footer-col-title footer-col-title-underline">Tools</div>
+                        <div class="footer-tools">
+                            <a class="footer-link" href="#tab-pixels"><i class="bx bx-grid-alt"></i>By pixels</a>
+                            <a class="footer-link" href="#tab-percent"><i class="bx bx-trending-up"></i>By %</a>
+                            <a class="footer-link" href="#width-px"><i class="bx bx-horizontal-center"></i>Width</a>
+                            <a class="footer-link" href="#height-px"><i class="bx bx-vertical-center"></i>Height</a>
+                            <a class="footer-link" href="#maintain-ratio"><i class="bx bx-lock-alt"></i>Maintain ratio</a>
+                        </div>
+                    </div>
+
+                    <div class="footer-col">
+                        <div class="footer-col-title footer-col-title-underline">Stay Updated</div>
+                        <div class="footer-desc">
+                            Product tips & updates, no spam. Unsubscribe anytime.
+                        </div>
+                        <div class="small mt-3" style="color: var(--image-resizer-text-muted); font-weight: 700;">
+                            <i class="bx bx-lock-alt me-1" aria-hidden="true"></i>We respect your privacy
                         </div>
                     </div>
                 </div>
 
                 <div class="footer-bottom mt-4 pt-3 border-top" style="border-color: rgba(42, 53, 72, 0.35) !important;">
                     <div class="text-center small">
-                        © Image Resizer — HTML · CSS · Bootstrap 5 · Boxicons · AOS
+                        © 2026 Image Resizer | Design by Md Abdul Adud
                     </div>
                 </div>
             </div>
