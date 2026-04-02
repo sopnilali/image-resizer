@@ -2525,21 +2525,33 @@
         e.preventDefault();
         dropZone.classList.remove('dragover');
         const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        if (files.length) addFiles(files);
+        if (files.length) {
+            revokeAll();
+            addFiles(files);
+        }
         else if (e.dataTransfer.files.length) showToast('Please drop image files only.');
     });
 
     fileInput.addEventListener('change', () => {
         const files = Array.from(fileInput.files || []);
-        if (files.length) addFiles(files);
+        if (files.length) {
+            revokeAll();
+            addFiles(files);
+        }
         fileInput.value = '';
     });
 
     function revokeAll() {
         items.forEach(({ url }) => URL.revokeObjectURL(url));
         items = [];
+        nextFileId = 0;
         previewGrid.innerHTML = '';
         previewGrid.hidden = true;
+        if (resultsTbody) resultsTbody.innerHTML = '';
+        if (resultsSection) resultsSection.hidden = true;
+        updateBtn();
+        updateSummary();
+        previewFilename();
     }
 
     function addFiles(files) {
