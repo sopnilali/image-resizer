@@ -218,12 +218,12 @@ AOS.init({
                 const nw = items[0].img.naturalWidth;
                 const nh = items[0].img.naturalHeight;
                 const { tw, th } = computeTargetSize(nw, nh);
-                sumDims.textContent = `${tw} Ã— ${th} px`;
+                sumDims.textContent = `${tw} — ${th} px`;
             } else {
-                sumDims.textContent = `${(wVal > 0 ? wVal : 'â€”')} Ã— ${(hVal > 0 ? hVal : 'â€”')} px`;
+                sumDims.textContent = `${(wVal > 0 ? wVal : '—')} × ${(hVal > 0 ? hVal : '—')} px`;
             }
         } else {
-            sumDims.textContent = `${scalePercent.value || 'â€”'}% of each image`;
+            sumDims.textContent = `${scalePercent.value || '—'}% of each image`;
         }
         sumFormat.textContent = getSelectedFormatLabel();
         if (bgMode === 'transparent') {
@@ -593,13 +593,13 @@ AOS.init({
 
         const tdOrig = document.createElement('td');
         tdOrig.className = 'text-center dim-muted small';
-        tdOrig.textContent = nw + ' Ã— ' + nh;
+        tdOrig.textContent = nw + 'px' + ' — ' + nh + 'px';
 
         const tdNew = document.createElement('td');
         tdNew.className = 'text-center';
         const spanNew = document.createElement('span');
         spanNew.className = 'dim-new';
-        spanNew.textContent = tw + ' Ã— ' + th;
+        spanNew.textContent = tw + 'px' + ' — ' + th + 'px';
         tdNew.appendChild(spanNew);
 
         const tdFmt = document.createElement('td');
