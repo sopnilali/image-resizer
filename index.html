@@ -1280,6 +1280,228 @@
             padding: 0.8rem 1.1rem;
         }
 
+        /* rt-footer (layout-only template) */
+        .rt-footer{
+          background:
+            radial-gradient(900px 260px at 20% 0%, rgba(99,102,241,.20), transparent 60%),
+            radial-gradient(760px 240px at 80% 10%, rgba(168,85,247,.16), transparent 55%),
+            linear-gradient(180deg, var(--image-resizer-bg-deep), var(--image-resizer-bg-body));
+          color: var(--image-resizer-text);
+          border-top: 1px solid var(--image-resizer-border);
+        }
+
+        .rt-footer__inner{
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 44px 18px 28px;
+          display: grid;
+          grid-template-columns: 1.1fr 1.2fr;
+          gap: 28px;
+          align-items: start;
+        }
+
+        .rt-footer__cta{
+          display:block;
+        }
+
+        .rt-footer__brand{
+          display:flex;
+          gap:12px;
+          align-items:flex-start;
+          margin-bottom: 14px;
+        }
+
+        .rt-footer__logo{
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(99,102,241,.9), rgba(168,85,247,.9));
+          box-shadow: 0 10px 30px rgba(99,102,241,.18);
+          flex-shrink: 0;
+        }
+
+        .rt-footer__name{
+          font-weight: 800;
+          letter-spacing: .2px;
+          line-height: 1.1;
+          color: #fff;
+        }
+
+        .rt-footer__tag{
+          margin-top: 4px;
+          color: var(--image-resizer-text-muted);
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .rt-footer__social{
+          display:flex;
+          gap:10px;
+          flex-wrap: wrap;
+          margin-top: 12px;
+        }
+
+        .rt-footer__social a{
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          border: 1px solid var(--image-resizer-border);
+          background: rgba(255,255,255,.04);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color: var(--image-resizer-text);
+          text-decoration:none;
+          transition: transform .15s, border-color .2s, background .2s;
+        }
+
+        .rt-footer__social a:hover{
+          transform: translateY(-1px);
+          border-color: rgba(99, 102, 241, 0.55);
+          background: rgba(99, 102, 241, 0.12);
+        }
+
+        .rt-footer__newsletter{
+          display:flex;
+          gap:10px;
+          margin-top: 12px;
+        }
+
+        .rt-footer__newsletter input{
+          flex: 1;
+          min-width: 180px;
+          background: rgba(255,255,255,.06);
+          border: 1px solid var(--image-resizer-border);
+          border-radius: 12px;
+          padding: 12px 14px;
+          color: var(--image-resizer-text);
+          outline: none;
+        }
+
+        .rt-footer__newsletter input:focus{
+          border-color: rgba(99, 102, 241, .45);
+          box-shadow: 0 0 0 4px rgba(99, 102, 241, .12);
+        }
+
+        .rt-footer__newsletter button{
+          background: linear-gradient(135deg, var(--image-resizer-accent), var(--image-resizer-accent-secondary));
+          border: 0;
+          border-radius: 12px;
+          padding: 12px 16px;
+          color: #04121a;
+          font-weight: 800;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .rt-footer__newsletter button:hover{
+          filter: brightness(1.03);
+        }
+
+        .rt-footer__badges{
+          display:flex;
+          gap:10px;
+          flex-wrap: wrap;
+          margin-top: 14px;
+        }
+
+        .rt-badge{
+          font-size: 12px;
+          color: var(--image-resizer-text-muted);
+          border: 1px solid var(--image-resizer-border);
+          background: rgba(255,255,255,.04);
+          padding: 8px 10px;
+          border-radius: 999px;
+        }
+
+        .rt-footer__cols{
+          display:grid;
+          grid-template-columns: repeat(4, minmax(140px, 1fr));
+          gap: 18px;
+        }
+
+        .rt-col{
+          padding: 6px 0;
+          min-width: 0;
+        }
+
+        .rt-col__title{
+          font-weight: 800;
+          font-size: 13px;
+          color: rgba(231,238,252,.92);
+          margin-bottom: 10px;
+          position: relative;
+          padding-bottom: 10px;
+        }
+
+        .rt-col__title::after{
+          content:'';
+          position:absolute;
+          left:0;
+          bottom:0;
+          width: 46px;
+          height: 2px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, rgba(99, 102, 241, .95), rgba(168, 85, 247, .95));
+        }
+
+        .rt-col a{
+          display:block;
+          color: var(--image-resizer-text-muted);
+          text-decoration: none;
+          padding: 7px 0;
+          font-size: 14px;
+          word-break: break-word;
+        }
+
+        .rt-col a:hover{
+          color: var(--image-resizer-text);
+        }
+
+        .rt-footer__bottom{
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 18px 18px 26px;
+          border-top: 1px solid var(--image-resizer-border);
+          display:flex;
+          gap: 12px;
+          justify-content: space-between;
+          align-items:center;
+          color: var(--image-resizer-text-muted);
+          font-size: 13px;
+          flex-wrap: wrap;
+        }
+
+        .rt-footer__bottom-links a{
+          margin-left: 14px;
+          color: var(--image-resizer-text-muted);
+          text-decoration: none;
+        }
+
+        .rt-footer__bottom-links a:hover{
+          color: var(--image-resizer-text);
+        }
+
+        .rt-sr-only{
+          position:absolute;
+          width:1px;height:1px;
+          padding:0;margin:-1px;
+          overflow:hidden;clip:rect(0,0,0,0);
+          white-space:nowrap;border-width:0;
+        }
+
+        @media (max-width: 980px){
+          .rt-footer__inner{ grid-template-columns: 1fr; }
+          .rt-footer__cols{ grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+        }
+
+        @media (max-width: 520px){
+          .rt-footer__cols{ grid-template-columns: 1fr; }
+          .rt-footer__newsletter{ flex-direction: column; }
+          .rt-footer__newsletter button{ width: 100%; }
+          .rt-footer__bottom{ flex-direction: column; align-items:flex-start; }
+        }
+
         .collapse-inner { padding-bottom: 1rem; }
 
         #file-input { display: none; }
@@ -1800,68 +2022,61 @@
             </div>
         </div>
 
-        <footer class="image-resizer-footer" data-aos="fade-up">
-            <div class="container">
-                <div class="footer-grid">
-                    <div class="footer-col footer-left-info">
-                        <div class="d-flex align-items-center gap-3 mb-2">
-                            <span class="image-resizer-logo-icon" aria-hidden="true"><i class="bx bx-image-alt"></i></span>
-                            <div>
-                                <div class="fw-bold text-white" style="letter-spacing: -0.02em;">ImageResizer</div>
-                                <div class="small" style="color: var(--image-resizer-text-muted);">Pixel-perfect resizing on your device</div>
-                            </div>
-                        </div>
-
-                        <p class="footer-desc mb-0 mt-2">
-                            <i class="bx bx-check-shield me-1" style="color: var(--image-resizer-success);"></i>
-                            100% client-side. No external APIs — files never leave your browser.
-                        </p>
-
-                        <div class="footer-social" aria-label="Social links">
-                            <a href="#" aria-label="Twitter">
-                                <i class="bx bxl-twitter" aria-hidden="true"></i>
-                            </a>
-                            <a href="#" aria-label="LinkedIn">
-                                <i class="bx bxl-linkedin" aria-hidden="true"></i>
-                            </a>
+        <footer class="rt-footer" data-aos="fade-up">
+            <div class="rt-footer__inner">
+                <div class="rt-footer__cta">
+                    <div class="rt-footer__brand">
+                        <div class="rt-footer__logo" aria-hidden="true"></div>
+                        <div>
+                            <div class="rt-footer__name">ImageResizer</div>
+                            <div class="rt-footer__tag">Resize images fast. Keep quality. Built to stay client-side.</div>
                         </div>
                     </div>
 
-                    <div class="footer-col">
-                        <div class="footer-col-title footer-col-title-underline">Quick Links</div>
-                        <div class="footer-tools">
-                            <a class="footer-link" href="#upload-section"><i class="bx bx-upload"></i>Resize</a>
-                            <a class="footer-link" href="#results-section"><i class="bx bx-download"></i>Export queue</a>
-                            <a class="footer-link" href="#advanced-panel"><i class="bx bx-cog"></i>Advanced</a>
-                        </div>
-                    </div>
-
-                    <div class="footer-col">
-                        <div class="footer-col-title footer-col-title-underline">Tools</div>
-                        <div class="footer-tools">
-                            <a class="footer-link" href="#tab-pixels"><i class="bx bx-grid-alt"></i>By pixels</a>
-                            <a class="footer-link" href="#tab-percent"><i class="bx bx-trending-up"></i>By %</a>
-                            <a class="footer-link" href="#width-px"><i class="bx bx-horizontal-center"></i>Width</a>
-                            <a class="footer-link" href="#height-px"><i class="bx bx-vertical-center"></i>Height</a>
-                            <a class="footer-link" href="#maintain-ratio"><i class="bx bx-lock-alt"></i>Maintain ratio</a>
-                        </div>
-                    </div>
-
-                    <div class="footer-col">
-                        <div class="footer-col-title footer-col-title-underline">Stay Updated</div>
-                        <div class="footer-desc">
-                            Product tips & updates, no spam. Unsubscribe anytime.
-                        </div>
-                        <div class="small mt-3" style="color: var(--image-resizer-text-muted); font-weight: 700;">
-                            <i class="bx bx-lock-alt me-1" aria-hidden="true"></i>We respect your privacy
-                        </div>
+                    <div class="rt-footer__social" aria-label="Social links">
+                        <a href="https://www.facebook.com/cse.wadud" aria-label="Facebook"><i class="bx bxl-facebook" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="bx bxl-linkedin" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
-                <div class="footer-bottom mt-4 pt-3 border-top" style="border-color: rgba(42, 53, 72, 0.35) !important;">
-                    <div class="text-center small">
-                        © 2026 Image Resizer | Design by Md Abdul Adud
+                <div class="rt-footer__cols" role="navigation" aria-label="Footer links">
+                    <div class="rt-col">
+                        <div class="rt-col__title">Product</div>
+                        <a href="#upload-section">Image Resizer</a>
+                        <a href="#results-section">Export queue</a>
+                        <a href="#advanced-panel">Advanced</a>
                     </div>
+
+                    <div class="rt-col">
+                        <div class="rt-col__title">Resources</div>
+                        <a href="#sum-method">Method</a>
+                        <a href="#sum-dims">Dimensions</a>
+                        <a href="#sum-format">Output format</a>
+                    </div>
+
+                    <div class="rt-col">
+                        <div class="rt-col__title">Tools</div>
+                        <a href="#" class="rt-preset-link" data-preset-w="800" data-preset-h="700">800x700 pixel</a>
+                        <a href="#" class="rt-preset-link" data-preset-w="1000" data-preset-h="800">1000x800 pixel</a>
+                        <a href="#" class="rt-preset-link" data-preset-w="500" data-preset-h="500">500x500 pixel</a>
+                        <a href="#" class="rt-preset-link" data-preset-w="1200" data-preset-h="1200">1200x1200 pixel</a>
+                    </div>
+
+                    <div class="rt-col">
+                        <div class="rt-col__title">Legal</div>
+                        <a href="#">Terms</a>
+                        <a href="#">Privacy</a>
+                        <a href="#">Cookie Policy</a>
+                        <a href="#">Security</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rt-footer__bottom">
+                <div>© 2026 ImageResizer. All rights reserved.</div>
+                <div class="rt-footer__bottom-links">
+                    <a href="#">Status</a>
+                    <a href="#">Sitemap</a>
                 </div>
             </div>
         </footer>
@@ -1933,6 +2148,22 @@
     /** @type {{ id: number, file: File, img: HTMLImageElement, url: string, cardEl: HTMLElement }[]} */
     let items = [];
     let nextFileId = 0;
+
+    function applyPixelPreset(w, h) {
+        // Keep the preset as a "pixel bounds" box (output may be smaller when "Maintain aspect ratio" is enabled).
+        mode = 'pixels';
+        tabPixels.classList.add('active');
+        tabPercent.classList.remove('active');
+        tabPixels.setAttribute('aria-selected', 'true');
+        tabPercent.setAttribute('aria-selected', 'false');
+        pixelInputs.classList.remove('d-none');
+        percentInputs.classList.add('d-none');
+
+        widthPx.value = String(w);
+        heightPx.value = String(h);
+        updateSummary();
+        previewFilename();
+    }
 
     function formatFileSize(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -2114,6 +2345,19 @@
         btnResize.disabled = n === 0;
         btnResizeText.textContent = n === 1 ? 'Resize 1 Image' : `Resize ${n} Images`;
     }
+
+    // Footer "Tools" pixel presets
+    document.querySelectorAll('.rt-preset-link').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            const w = parseInt(el.getAttribute('data-preset-w') || '', 10);
+            const h = parseInt(el.getAttribute('data-preset-h') || '', 10);
+            if (!w || !h) return;
+            applyPixelPreset(w, h);
+            const workspace = document.querySelector('.resizer-card');
+            if (workspace) workspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
 
     function syncRatioFromWidth() {
         if (!maintainRatio.checked || mode !== 'pixels') return;
