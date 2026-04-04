@@ -583,7 +583,7 @@ AOS.init({
         });
     }
 
-    function appendResultRow(tbody, serialNo, fileName, nw, nh, tw, th, formatText) {
+    function appendResultRow(tbody, serialNo, fileName, fileBytes, nw, nh, tw, th, formatText) {
         const tr = document.createElement('tr');
 
         const tdSerial = document.createElement('td');
@@ -612,6 +612,11 @@ AOS.init({
         spanFmt.className = 'format-label';
         spanFmt.textContent = formatText;
         tdFmt.appendChild(spanFmt);
+
+        const tdFileSize = document.createElement('td');
+        tdFileSize.className = 'text-center dim-muted small';
+        tdFileSize.style.whiteSpace = 'nowrap';
+        tdFileSize.textContent = formatFileSize(fileBytes);
 
         const tdStatus = document.createElement('td');
         tdStatus.className = 'text-end';
@@ -647,11 +652,12 @@ AOS.init({
         tr.appendChild(tdOrig);
         tr.appendChild(tdNew);
         tr.appendChild(tdFmt);
+        tr.appendChild(tdFileSize);
         tr.appendChild(tdStatus);
         tr.appendChild(tdDl);
         tbody.appendChild(tr);
 
-        return { formatEl: spanFmt, statusEl: spanAct, downloadBtn };
+        return { formatEl: spanFmt, statusEl: spanAct, downloadBtn, tdFileSize };
     }
 
     async function processAndResize() {
@@ -683,10 +689,11 @@ AOS.init({
                 const nh = img.naturalHeight;
                 const { tw, th } = computeTargetSize(nw, nh);
 
-                const { formatEl, statusEl, downloadBtn } = appendResultRow(
+                const { formatEl, statusEl, downloadBtn, tdFileSize } = appendResultRow(
                     resultsTbody,
                     i + 1,
                     file.name,
+                    file.size,
                     nw,
                     nh,
                     tw,
@@ -727,6 +734,7 @@ AOS.init({
                     downloadBtn.disabled = false;
                     downloadBtn._resultBlob = blob;
                     downloadBtn._downloadName = downloadName;
+                    tdFileSize.textContent = `${formatFileSize(file.size)} \u2192 ${formatFileSize(blob.size)}`;
                     processedOutputs.push({ name: downloadName, blob });
                     updateDownloadAllBtn();
                 } catch (fileErr) {
