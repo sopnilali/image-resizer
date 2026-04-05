@@ -14,6 +14,51 @@ AOS.init({
         copyrightYear.textContent = String(new Date().getFullYear());
     }
 
+    const THEME_KEY = 'image-resizer-theme';
+    const themeToggle = document.getElementById('theme-toggle');
+
+    function applyTheme(theme) {
+        const t = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        if (!themeToggle) return;
+        const isDark = t === 'dark';
+        themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        themeToggle.setAttribute('title', isDark ? 'Light mode' : 'Dark mode');
+        themeToggle.innerHTML = isDark
+            ? '<i class="bx bx-sun" aria-hidden="true"></i>'
+            : '<i class="bx bx-moon" aria-hidden="true"></i>';
+    }
+
+    function initTheme() {
+        let stored = null;
+        try {
+            stored = localStorage.getItem(THEME_KEY);
+        } catch (_) {}
+        if (stored === 'light' || stored === 'dark') {
+            applyTheme(stored);
+            return;
+        }
+        try {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                applyTheme('light');
+                return;
+            }
+        } catch (_) {}
+        applyTheme('dark');
+    }
+
+    initTheme();
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            const next = cur === 'dark' ? 'light' : 'dark';
+            try {
+                localStorage.setItem(THEME_KEY, next);
+            } catch (_) {}
+            applyTheme(next);
+        });
+    }
+
     const uploadSection = document.getElementById('upload-section');
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');

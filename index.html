@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,13 +30,18 @@
                         <img src="assets/favicon-32x32.png" alt="" />
                     </span>
                     <div>
-                        <span class="fw-bold text-white d-block lh-sm" style="letter-spacing: -0.02em;">ImageResizer</span>
+                        <span class="fw-bold image-resizer-nav-brand d-block lh-sm" style="letter-spacing: -0.02em;">ImageResizer</span>
                         <span class="small" style="color: var(--image-resizer-text-muted);">Resize · Convert · Export</span>
                     </div>
                     <span class="badge rounded-pill ms-md-2 d-none d-sm-inline-flex align-items-center px-2 py-1" style="background: var(--image-resizer-accent-dim); color: var(--image-resizer-accent); border: 1px solid var(--image-resizer-border); font-size: 0.65rem; font-weight: 700;">SAAS</span>
                 </div>
-                <div class="small d-none d-md-flex align-items-center gap-2" style="color: var(--image-resizer-text-muted);">
-                    <i class="bx bx-lock-alt"></i><span>Runs in your browser</span>
+                <div class="d-flex align-items-center gap-2 gap-md-3 ms-auto">
+                    <div class="small d-none d-md-flex align-items-center gap-2" style="color: var(--image-resizer-text-muted);">
+                        <i class="bx bx-lock-alt"></i><span>Runs in your browser</span>
+                    </div>
+                    <button type="button" class="btn-theme-toggle" id="theme-toggle" aria-label="Switch to light mode" title="Light mode">
+                        <i class="bx bx-sun" aria-hidden="true"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -101,7 +106,7 @@
                                 <div class="hero-mock-card">
                                     <div class="hero-mock-card-head">
                                         <span class="hero-mock-pill">Before</span>
-                                        <span class="hero-mock-dims">1920 Ã— 1080</span>
+                                        <span class="hero-mock-dims">1920px-1080px</span>
                                     </div>
                                     <div class="hero-mock-preview"></div>
                                 </div>
@@ -111,7 +116,7 @@
                                 <div class="hero-mock-card">
                                     <div class="hero-mock-card-head">
                                         <span class="hero-mock-pill">After</span>
-                                        <span class="hero-mock-dims">800 Ã— 600</span>
+                                        <span class="hero-mock-dims">800px-600px</span>
                                     </div>
                                     <div class="hero-mock-preview hero-mock-preview--after"></div>
                                 </div>
@@ -362,7 +367,10 @@
             </div>
         </div>
 
-        <footer class="rt-footer" data-aos="fade-up">
+    </main>
+
+    <footer class="rt-footer" data-aos="fade-up">
+        <div class="container">
             <div class="rt-footer__inner">
                 <div class="rt-footer__cta">
                     <div class="rt-footer__brand">
@@ -421,8 +429,8 @@
                     <a href="/sitemap.xml">Sitemap</a>
                 </div>
             </div>
-        </footer>
-    </main>
+        </div>
+    </footer>
 
     <div id="toast-el" class="app-toast" role="alert" aria-live="polite">
         <button type="button" class="toast-close" id="toast-close" aria-label="Dismiss">&times;</button>
