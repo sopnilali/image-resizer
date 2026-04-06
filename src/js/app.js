@@ -310,8 +310,8 @@ AOS.init({
         btnDownloadAll.disabled = processedOutputs.length === 0;
     }
 
-    // Footer "Tools" pixel presets
-    document.querySelectorAll('.rt-preset-link').forEach((el) => {
+    // Footer Tools + workspace “Social media auto sizes” pixel presets
+    document.querySelectorAll('.rt-preset-link, .social-preset-chip').forEach((el) => {
         el.addEventListener('click', (e) => {
             e.preventDefault();
             const w = parseInt(el.getAttribute('data-preset-w') || '', 10);
@@ -324,27 +324,44 @@ AOS.init({
     });
 
     function syncRatioFromWidth() {
-        if (!maintainRatio.checked || mode !== 'pixels') return;
+        if (!maintainRatio.checked || mode !== 'pixels' || !items.length) return;
         const w = parseInt(widthPx.value, 10);
-        const h = parseInt(heightPx.value, 10);
-        if (w > 0 && h > 0 && items.length) {
-            const r = items[0].img.naturalHeight / items[0].img.naturalWidth;
-            heightPx.value = Math.max(1, Math.round(w * r));
-        }
+        if (!(w > 0)) return;
+        const nw = items[0].img.naturalWidth;
+        const nh = items[0].img.naturalHeight;
+        if (!(nw > 0 && nh > 0)) return;
+        // Do not require height to be valid first (empty height → parseInt NaN used to block sync).
+        const th = Math.max(1, Math.round((w * nh) / nw));
+        heightPx.value = String(th);
     }
 
     function syncRatioFromHeight() {
-        if (!maintainRatio.checked || mode !== 'pixels') return;
-        const w = parseInt(widthPx.value, 10);
+        if (!maintainRatio.checked || mode !== 'pixels' || !items.length) return;
         const h = parseInt(heightPx.value, 10);
-        if (w > 0 && h > 0 && items.length) {
-            const r = items[0].img.naturalWidth / items[0].img.naturalHeight;
-            widthPx.value = Math.max(1, Math.round(h * r));
-        }
+        if (!(h > 0)) return;
+        const nw = items[0].img.naturalWidth;
+        const nh = items[0].img.naturalHeight;
+        if (!(nw > 0 && nh > 0)) return;
+        const tw = Math.max(1, Math.round((h * nw) / nh));
+        widthPx.value = String(tw);
     }
 
-    widthPx.addEventListener('input', () => { syncRatioFromWidth(); updateSummary(); previewFilename(); });
-    heightPx.addEventListener('input', () => { syncRatioFromHeight(); updateSummary(); previewFilename(); });
+    function onWidthPxAdjust() {
+        syncRatioFromWidth();
+        updateSummary();
+        previewFilename();
+    }
+
+    function onHeightPxAdjust() {
+        syncRatioFromHeight();
+        updateSummary();
+        previewFilename();
+    }
+
+    widthPx.addEventListener('input', onWidthPxAdjust);
+    widthPx.addEventListener('change', onWidthPxAdjust);
+    heightPx.addEventListener('input', onHeightPxAdjust);
+    heightPx.addEventListener('change', onHeightPxAdjust);
     scalePercent.addEventListener('input', () => { updateSummary(); previewFilename(); });
     maintainRatio.addEventListener('change', () => {
         if (maintainRatio.checked && items.length && mode === 'pixels') syncRatioFromWidth();
@@ -557,31 +574,68 @@ AOS.init({
         });
     }
 
+    /**
+     * Integer output size that preserves nw:nh, fits inside maxW×maxH, and never exceeds the float “fit” scale
+     * (avoids independent rounding errors e.g. 1920×1080 targets or slight aspect drift / 1px box overflow).
+     */
+    function integerDimensionsAspectInside(nw, nh, maxW, maxH) {
+        const nwi = Math.max(1, nw);
+        const nhi = Math.max(1, nh);
+        const mw = Math.max(1, maxW);
+        const mh = Math.max(1, maxH);
+        const scale = Math.min(mw / nwi, mh / nhi);
+        let tw = Math.max(1, Math.round(nwi * scale));
+        let th = Math.max(1, Math.round((tw * nhi) / nwi));
+        if (th > mh) {
+            th = mh;
+            tw = Math.max(1, Math.round((th * nwi) / nhi));
+        }
+        if (tw > mw) {
+            tw = mw;
+            th = Math.max(1, Math.round((tw * nhi) / nwi));
+        }
+        if (th > mh) {
+            th = mh;
+            tw = Math.max(1, Math.round((th * nwi) / nhi));
+        }
+        return { tw, th };
+    }
+
     function computeTargetSize(nw, nh) {
         let tw, th;
         if (mode === 'percent') {
             const p = Math.max(1, Math.min(500, parseInt(scalePercent.value, 10) || 100)) / 100;
-            tw = Math.max(1, Math.round(nw * p));
-            th = Math.max(1, Math.round(nh * p));
+            const effP = noEnlarge.checked ? Math.min(p, 1) : p;
+            tw = Math.max(1, Math.round(nw * effP));
+            th = Math.max(1, Math.round((tw * nh) / Math.max(1, nw)));
+            if (noEnlarge.checked) {
+                if (tw > nw) {
+                    tw = nw;
+                    th = Math.max(1, Math.round((tw * nh) / Math.max(1, nw)));
+                }
+                if (th > nh) {
+                    th = nh;
+                    tw = Math.max(1, Math.round((th * nw) / Math.max(1, nh)));
+                }
+            }
         } else {
             const targetW = Math.max(1, parseInt(widthPx.value, 10) || 1);
             const targetH = Math.max(1, parseInt(heightPx.value, 10) || 1);
             if (maintainRatio.checked) {
-                const scale = Math.min(targetW / nw, targetH / nh);
-                tw = Math.max(1, Math.round(nw * scale));
-                th = Math.max(1, Math.round(nh * scale));
+                let maxW = targetW;
+                let maxH = targetH;
+                if (noEnlarge.checked) {
+                    maxW = Math.min(maxW, nw);
+                    maxH = Math.min(maxH, nh);
+                }
+                ({ tw, th } = integerDimensionsAspectInside(nw, nh, maxW, maxH));
             } else {
                 tw = targetW;
                 th = targetH;
-            }
-        }
-        if (noEnlarge.checked) {
-            tw = Math.min(tw, nw);
-            th = Math.min(th, nh);
-            if (maintainRatio.checked) {
-                const scale = Math.min(tw / nw, th / nh);
-                tw = Math.max(1, Math.round(nw * scale));
-                th = Math.max(1, Math.round(nh * scale));
+                if (noEnlarge.checked) {
+                    tw = Math.min(tw, nw);
+                    th = Math.min(th, nh);
+                }
             }
         }
         return { tw, th };

@@ -636,6 +636,13 @@
             color: var(--image-resizer-accent);
         }
 
+        .resize-inline-divider {
+            margin: 1.35rem 0 0.85rem;
+            border: 0;
+            border-top: 1px solid var(--image-resizer-border);
+            opacity: 1;
+        }
+
         .resize-options-shell {
             margin-top: 1.5rem;
             padding-top: 1.25rem;
@@ -841,6 +848,76 @@
             font-size: 0.8rem;
             color: var(--image-resizer-text-muted);
             margin-bottom: 0.5rem;
+        }
+
+        .social-preset-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-preset-grid--workspace {
+            margin-bottom: 0.35rem;
+        }
+
+        .social-preset-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.65rem 0.85rem;
+            border-radius: var(--image-resizer-radius-sm);
+            border: 1px solid var(--image-resizer-border);
+            background: var(--image-resizer-bg-elevated);
+            color: var(--image-resizer-text);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        }
+
+        .social-preset-chip:hover {
+            border-color: rgba(99, 102, 241, 0.45);
+            background: var(--image-resizer-accent-dim);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12);
+        }
+
+        .social-preset-chip:focus-visible {
+            outline: 2px solid var(--image-resizer-accent);
+            outline-offset: 2px;
+        }
+
+        .social-preset-chip__icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(168, 85, 247, 0.12));
+            color: var(--image-resizer-accent);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .social-preset-chip__text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            min-width: 0;
+        }
+
+        .social-preset-chip__label {
+            font-weight: 700;
+            font-size: 0.86rem;
+            letter-spacing: -0.02em;
+        }
+
+        .social-preset-chip__dims {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--image-resizer-text-muted);
+            font-variant-numeric: tabular-nums;
         }
 
         .advanced-quality-row {
