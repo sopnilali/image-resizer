@@ -26,13 +26,15 @@
         <div class="container">
             <div class="d-flex align-items-center justify-content-between py-3">
                 <div class="d-flex align-items-center gap-3">
-                    <span class="image-resizer-logo-icon" aria-hidden="true">
-                        <img src="assets/favicon-32x32.png" alt="" />
-                    </span>
-                    <div>
-                        <span class="fw-bold image-resizer-nav-brand d-block lh-sm" style="letter-spacing: -0.02em;">ImageResizer</span>
-                        <span class="small" style="color: var(--image-resizer-text-muted);">Resize · Convert · Export</span>
-                    </div>
+                    <a href="/" class="image-resizer-brand-link" aria-label="ImageResizer Home">
+                        <span class="image-resizer-logo-icon" aria-hidden="true">
+                            <img src="assets/favicon-32x32.png" alt="Image Resizer Logo" />
+                        </span>
+                        <span>
+                            <span class="fw-bold image-resizer-nav-brand d-block lh-sm" style="letter-spacing: -0.02em;">ImageResizer</span>
+                            <span class="small" style="color: var(--image-resizer-text-muted);">Resize · Convert · Export</span>
+                        </span>
+                    </a>
                     <span class="badge rounded-pill ms-md-2 d-none d-sm-inline-flex align-items-center px-2 py-1" style="background: var(--image-resizer-accent-dim); color: var(--image-resizer-accent); border: 1px solid var(--image-resizer-border); font-size: 0.65rem; font-weight: 700;">SAAS</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-md-3 ms-auto">
@@ -48,17 +50,10 @@
     </header>
 
     <main class="container py-4 py-lg-5">
-        <div id="file-protocol-banner" class="file-protocol-banner" role="status" data-aos="fade-up">
-            <strong class="d-block mb-1">Opened as a local file (<code>file://</code>)</strong>
-            Editor â€œSimple Browserâ€ / Live Preview loads this page inside a frame. Browsers treat each <code>file:</code> URL as its own locked-down origin, which triggers security warnings and can break scripts or downloads.
-            <span class="d-block mt-2 mb-1"><strong>Fix:</strong> open this page in a normal browser tab (doubleâ€‘click <code>euse.html</code> in File Explorer), or serve the folder over HTTP:</span>
-            <code id="serve-snippet">python -m http.server 8765</code>
-            <span class="d-block mt-1 small" style="color: var(--image-resizer-text-muted);">Then visit <code>http://localhost:8765/euse.html</code> â€” or run <code>serve-euse.bat</code> in this folder (if Python is installed).</span>
-        </div>
         <div class="image-resizer-hero mb-4 mb-lg-5" data-aos="fade-up" data-aos-duration="650">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-3">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Resize Image</li>
                 </ol>
             </nav>

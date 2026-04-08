@@ -54,6 +54,24 @@
             color: var(--image-resizer-text);
         }
 
+        .image-resizer-brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .image-resizer-brand-link:hover .image-resizer-nav-brand {
+            color: var(--image-resizer-accent);
+        }
+
+        .image-resizer-brand-link:focus-visible {
+            outline: 2px solid var(--image-resizer-accent);
+            outline-offset: 3px;
+            border-radius: 10px;
+        }
+
         .btn-theme-toggle {
             width: 40px;
             height: 40px;
