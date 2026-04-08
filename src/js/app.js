@@ -199,8 +199,11 @@ AOS.init({
         toastEl.classList.remove('is-visible');
     }
 
-    function showToast(msg) {
+    function showToast(msg, tone = 'error') {
         toastBody.textContent = msg;
+        toastEl.classList.remove('is-success', 'is-info');
+        if (tone === 'success') toastEl.classList.add('is-success');
+        else if (tone === 'info') toastEl.classList.add('is-info');
         toastEl.classList.add('is-visible');
         clearTimeout(toastTimer);
         toastTimer = setTimeout(hideToast, 4500);
@@ -283,6 +286,12 @@ AOS.init({
     function previewFilename() {
         const ext = selectedMime === 'image/png' ? 'png' : selectedMime === 'image/webp' ? 'webp' : 'jpg';
         const base = baseName.value.trim().replace(/[/\\?%*:|"<>]/g, '-');
+        const kebab = (s) => s
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
         let dimPart = 'WxH';
         if (mode === 'pixels') {
             const w = parseInt(widthPx.value, 10);
@@ -292,7 +301,7 @@ AOS.init({
             dimPart = `${parseInt(scalePercent.value, 10) || 100}pct`;
         }
         let parts = [];
-        if (base) parts.push(base);
+        if (base) parts.push(kebab(base));
         if (nameOriginal.checked) parts.push('original-name');
         if (nameDims.checked) parts.push(dimPart);
         const stem = parts.length ? parts.join('-') : 'image';
@@ -659,9 +668,16 @@ AOS.init({
         const ext = selectedMime === 'image/png' ? 'png' : selectedMime === 'image/webp' ? 'webp' : 'jpg';
         const base = baseName.value.trim().replace(/[/\\?%*:|"<>]/g, '-');
         const stem = originalName.replace(/\.[^/.]+$/, '');
+        const kebab = (s) => s
+            .trim()
+            .toLowerCase()
+            .replace(/[/\\?%*:|"<>]/g, '-')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
         let parts = [];
-        if (base) parts.push(base);
-        if (nameOriginal.checked) parts.push(stem);
+        if (base) parts.push(kebab(base));
+        if (nameOriginal.checked) parts.push(kebab(stem));
         if (nameDims.checked) parts.push(`${tw}x${th}`);
         let name = parts.filter(Boolean).join('-') || 'resized';
         if (!nameOriginal.checked && !base && !nameDims.checked) name = 'resized';
@@ -743,6 +759,7 @@ AOS.init({
             a.click();
             document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 2500);
+            showToast('Started download for "' + name + '".', 'success');
         });
         tdDl.appendChild(downloadBtn);
 
@@ -861,7 +878,14 @@ AOS.init({
     }
 
     btnResize.addEventListener('click', () => {
-        processAndResize().catch((e) => showToast(e.message || 'Resize failed.'));
+        showToast('Processing images… please wait.', 'info');
+        processAndResize()
+            .then(() => {
+                if (processedOutputs.length) {
+                    showToast('Resize complete. Use Download buttons or ZIP Download.', 'success');
+                }
+            })
+            .catch((e) => showToast(e.message || 'Resize failed.'));
     });
 
     if (btnDownloadAll) {
@@ -878,6 +902,7 @@ AOS.init({
             });
 
             try {
+                showToast('Preparing ZIP download…', 'info');
                 btnDownloadAll.disabled = true;
                 const zipBlob = await zip.generateAsync({ type: 'blob' });
                 const url = URL.createObjectURL(zipBlob);
@@ -888,6 +913,7 @@ AOS.init({
                 a.click();
                 document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(url), 2500);
+                showToast('ZIP download started.', 'success');
             } catch (err) {
                 showToast('Could not create ZIP file.');
             } finally {

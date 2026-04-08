@@ -1640,6 +1640,14 @@
             pointer-events: none;
         }
 
+        .app-toast.is-success {
+            background: #059669;
+        }
+
+        .app-toast.is-info {
+            background: #4f46e5;
+        }
+
         .app-toast.is-visible {
             opacity: 1;
             transform: translateY(0);
