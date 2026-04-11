@@ -72,6 +72,9 @@ AOS.init({
     const percentInputs = document.getElementById('percent-inputs');
     const widthPx = document.getElementById('width-px');
     const heightPx = document.getElementById('height-px');
+    const dimUnitEl = document.getElementById('dim-unit');
+    const widthAddon = document.getElementById('width-addon');
+    const heightAddon = document.getElementById('height-addon');
     const scalePercent = document.getElementById('scale-percent');
     const maintainRatio = document.getElementById('maintain-ratio');
     const noEnlarge = document.getElementById('no-enlarge');
@@ -99,7 +102,12 @@ AOS.init({
     const resultsTbody = document.getElementById('results-tbody');
     const btnDownloadAll = document.getElementById('btn-download-all');
 
+    /** CSS / screen reference: pixels per inch for converting in and cm to output pixels */
+    const CSS_PPI = 96;
+
     let mode = 'pixels';
+    /** @type {'px'|'in'|'cm'} */
+    let dimensionUnit = dimUnitEl && dimUnitEl.value ? dimUnitEl.value : 'px';
     let selectedMime = 'image/jpeg';
     let bgMode = 'transparent';
     /** @type {{ id: number, file: File, img: HTMLImageElement, url: string, cardEl: HTMLElement }[]} */
@@ -107,6 +115,52 @@ AOS.init({
     let nextFileId = 0;
     /** @type {{ name: string, blob: Blob }[]} */
     let processedOutputs = [];
+
+    function toPixels(val, unit) {
+        const n = parseFloat(String(val));
+        if (!(n > 0) || !isFinite(n)) return NaN;
+        if (unit === 'px') return Math.max(1, Math.round(n));
+        if (unit === 'in') return Math.max(1, Math.round(n * CSS_PPI));
+        if (unit === 'cm') return Math.max(1, Math.round((n * CSS_PPI) / 2.54));
+        return Math.max(1, Math.round(n));
+    }
+
+    function fromPixels(px, unit) {
+        const p = Math.max(1, px);
+        if (unit === 'px') return p;
+        if (unit === 'in') return p / CSS_PPI;
+        if (unit === 'cm') return (p * 2.54) / CSS_PPI;
+        return p;
+    }
+
+    function formatDimValue(num, unit) {
+        if (!isFinite(num) || num <= 0) return '';
+        if (unit === 'px') return String(Math.max(1, Math.round(num)));
+        const v = Math.round(num * 10000) / 10000;
+        let s = String(v);
+        if (s.includes('.')) s = s.replace(/\.?0+$/, '');
+        return s;
+    }
+
+    function readTargetBoxPixels() {
+        const wPx = toPixels(widthPx.value, dimensionUnit);
+        const hPx = toPixels(heightPx.value, dimensionUnit);
+        return {
+            targetW: isFinite(wPx) && wPx > 0 ? wPx : 1,
+            targetH: isFinite(hPx) && hPx > 0 ? hPx : 1
+        };
+    }
+
+    function syncDimensionUnitUI() {
+        const isPx = dimensionUnit === 'px';
+        const suffix = dimensionUnit === 'px' ? 'px' : dimensionUnit === 'in' ? 'in' : 'cm';
+        widthPx.min = isPx ? '1' : '0.01';
+        heightPx.min = isPx ? '1' : '0.01';
+        widthPx.step = isPx ? '1' : '0.01';
+        heightPx.step = isPx ? '1' : '0.01';
+        if (widthAddon) widthAddon.textContent = suffix;
+        if (heightAddon) heightAddon.textContent = suffix;
+    }
 
     function applyPixelPreset(w, h) {
         // Keep the preset as a "pixel bounds" box (output may be smaller when "Maintain aspect ratio" is enabled).
@@ -117,6 +171,10 @@ AOS.init({
         tabPercent.setAttribute('aria-selected', 'false');
         pixelInputs.classList.remove('d-none');
         percentInputs.classList.add('d-none');
+
+        dimensionUnit = 'px';
+        if (dimUnitEl) dimUnitEl.value = 'px';
+        syncDimensionUnitUI();
 
         widthPx.value = String(w);
         heightPx.value = String(h);
@@ -182,8 +240,10 @@ AOS.init({
         if (items.length === 0) {
             previewGrid.hidden = true;
         } else if (maintainRatio.checked && mode === 'pixels') {
-            widthPx.value = String(items[0].img.naturalWidth);
-            heightPx.value = String(items[0].img.naturalHeight);
+            const nw = items[0].img.naturalWidth;
+            const nh = items[0].img.naturalHeight;
+            widthPx.value = formatDimValue(fromPixels(nw, dimensionUnit), dimensionUnit);
+            heightPx.value = formatDimValue(fromPixels(nh, dimensionUnit), dimensionUnit);
         }
         updateBtn();
         updateSummary();
@@ -259,8 +319,11 @@ AOS.init({
     function updateSummary() {
         sumMethod.textContent = mode === 'pixels' ? 'Pixels' : 'Percentage';
         if (mode === 'pixels') {
-            const wVal = parseInt(widthPx.value, 10);
-            const hVal = parseInt(heightPx.value, 10);
+            const wVal = parseFloat(widthPx.value);
+            const hVal = parseFloat(heightPx.value);
+            const uSuf = dimensionUnit === 'px' ? 'px' : dimensionUnit === 'in' ? 'in' : 'cm';
+            const wDisp = isFinite(wVal) && wVal > 0 ? formatDimValue(wVal, dimensionUnit) : '—';
+            const hDisp = isFinite(hVal) && hVal > 0 ? formatDimValue(hVal, dimensionUnit) : '—';
             const hasImg = items.length > 0 && maintainRatio.checked;
             if (hasImg) {
                 const nw = items[0].img.naturalWidth;
@@ -268,7 +331,7 @@ AOS.init({
                 const { tw, th } = computeTargetSize(nw, nh);
                 sumDims.textContent = `${tw} — ${th} px`;
             } else {
-                sumDims.textContent = `${(wVal > 0 ? wVal : '—')} × ${(hVal > 0 ? hVal : '—')} px`;
+                sumDims.textContent = `${wDisp} × ${hDisp} ${uSuf}`;
             }
         } else {
             sumDims.textContent = `${scalePercent.value || '—'}% of each image`;
@@ -294,9 +357,8 @@ AOS.init({
             .replace(/^-|-$/g, '');
         let dimPart = 'WxH';
         if (mode === 'pixels') {
-            const w = parseInt(widthPx.value, 10);
-            const h = parseInt(heightPx.value, 10);
-            if (w > 0 && h > 0) dimPart = `${w}x${h}`;
+            const { targetW, targetH } = readTargetBoxPixels();
+            if (targetW > 0 && targetH > 0) dimPart = `${targetW}x${targetH}`;
         } else {
             dimPart = `${parseInt(scalePercent.value, 10) || 100}pct`;
         }
@@ -319,8 +381,7 @@ AOS.init({
         btnDownloadAll.disabled = processedOutputs.length === 0;
     }
 
-    // Footer Tools + workspace “Social media auto sizes” pixel presets
-    document.querySelectorAll('.rt-preset-link, .social-preset-chip').forEach((el) => {
+    document.querySelectorAll('.rt-preset-link').forEach((el) => {
         el.addEventListener('click', (e) => {
             e.preventDefault();
             const w = parseInt(el.getAttribute('data-preset-w') || '', 10);
@@ -334,25 +395,28 @@ AOS.init({
 
     function syncRatioFromWidth() {
         if (!maintainRatio.checked || mode !== 'pixels' || !items.length) return;
-        const w = parseInt(widthPx.value, 10);
+        const w = parseFloat(widthPx.value);
         if (!(w > 0)) return;
+        const wPx = toPixels(w, dimensionUnit);
+        if (!(wPx > 0)) return;
         const nw = items[0].img.naturalWidth;
         const nh = items[0].img.naturalHeight;
         if (!(nw > 0 && nh > 0)) return;
-        // Do not require height to be valid first (empty height → parseInt NaN used to block sync).
-        const th = Math.max(1, Math.round((w * nh) / nw));
-        heightPx.value = String(th);
+        const th = Math.max(1, Math.round((wPx * nh) / nw));
+        heightPx.value = formatDimValue(fromPixels(th, dimensionUnit), dimensionUnit);
     }
 
     function syncRatioFromHeight() {
         if (!maintainRatio.checked || mode !== 'pixels' || !items.length) return;
-        const h = parseInt(heightPx.value, 10);
+        const h = parseFloat(heightPx.value);
         if (!(h > 0)) return;
+        const hPx = toPixels(h, dimensionUnit);
+        if (!(hPx > 0)) return;
         const nw = items[0].img.naturalWidth;
         const nh = items[0].img.naturalHeight;
         if (!(nw > 0 && nh > 0)) return;
-        const tw = Math.max(1, Math.round((h * nw) / nh));
-        widthPx.value = String(tw);
+        const tw = Math.max(1, Math.round((hPx * nw) / nh));
+        widthPx.value = formatDimValue(fromPixels(tw, dimensionUnit), dimensionUnit);
     }
 
     function onWidthPxAdjust() {
@@ -417,6 +481,25 @@ AOS.init({
         updateSummary();
         previewFilename();
     });
+
+    if (dimUnitEl) {
+        dimUnitEl.addEventListener('change', () => {
+            const prev = dimensionUnit;
+            dimensionUnit = /** @type {'px'|'in'|'cm'} */ (dimUnitEl.value || 'px');
+            const wPx = toPixels(widthPx.value, prev);
+            const hPx = toPixels(heightPx.value, prev);
+            if (isFinite(wPx) && wPx > 0) {
+                widthPx.value = formatDimValue(fromPixels(wPx, dimensionUnit), dimensionUnit);
+            }
+            if (isFinite(hPx) && hPx > 0) {
+                heightPx.value = formatDimValue(fromPixels(hPx, dimensionUnit), dimensionUnit);
+            }
+            syncDimensionUnitUI();
+            if (maintainRatio.checked && items.length && mode === 'pixels') syncRatioFromWidth();
+            updateSummary();
+            previewFilename();
+        });
+    }
 
     formatCards.forEach(card => {
         card.addEventListener('click', () => {
@@ -565,8 +648,10 @@ AOS.init({
                 pending--;
                 if (pending === 0) {
                     if (maintainRatio.checked && mode === 'pixels') {
-                        widthPx.value = String(items[0].img.naturalWidth);
-                        heightPx.value = String(items[0].img.naturalHeight);
+                        const nw = items[0].img.naturalWidth;
+                        const nh = items[0].img.naturalHeight;
+                        widthPx.value = formatDimValue(fromPixels(nw, dimensionUnit), dimensionUnit);
+                        heightPx.value = formatDimValue(fromPixels(nh, dimensionUnit), dimensionUnit);
                     }
                     updateBtn();
                     updateSummary();
@@ -628,8 +713,7 @@ AOS.init({
                 }
             }
         } else {
-            const targetW = Math.max(1, parseInt(widthPx.value, 10) || 1);
-            const targetH = Math.max(1, parseInt(heightPx.value, 10) || 1);
+            const { targetW, targetH } = readTargetBoxPixels();
             if (maintainRatio.checked) {
                 let maxW = targetW;
                 let maxH = targetH;
@@ -922,6 +1006,7 @@ AOS.init({
         });
     }
 
+    syncDimensionUnitUI();
     updateQualityDisabled();
     syncAdvancedQualityFill();
     updateSummary();

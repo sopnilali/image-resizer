@@ -138,7 +138,7 @@
                     <div class="resize-settings-icon" aria-hidden="true"><i class="bx bx-slider"></i></div>
                     <div>
                         <h2 class="resize-settings-heading">Resize settings</h2>
-                        <p class="resize-settings-sub">Choose pixel bounds or a percentage scale, then lock aspect ratio or cap upscaling before you run the batch.</p>
+                        <p class="resize-settings-sub">Set target size in pixels, inches, centimeters, or as a percentage scale, then lock aspect ratio or cap upscaling before you run the batch.</p>
                     </div>
                 </div>
                 <div class="resize-tabs-wrap" role="tablist" aria-label="Resize mode">
@@ -152,48 +152,30 @@
                     <div class="resize-workspace-inner h-100">
                         <p class="resize-section-title mb-0">Target dimensions</p>
                         <div id="pixel-inputs">
+                            <div class="mt-2 mb-3">
+                                <label class="resize-field-label" for="dim-unit"><i class="bx bx-ruler" aria-hidden="true"></i>Unit</label>
+                                <select class="form-select form-select-lg" id="dim-unit" aria-describedby="dim-unit-hint">
+                                    <option value="px" selected>Pixels (px)</option>
+                                    <option value="in">Inches (in)</option>
+                                    <option value="cm">Centimeters (cm)</option>
+                                </select>
+                                <p class="advanced-subtext mb-0 mt-2 small" id="dim-unit-hint">Inches and cm convert using 96 pixels per inch (CSS reference). Exported images use whole pixels.</p>
+                            </div>
                             <div class="row g-3 mt-1">
                                 <div class="col-sm-6">
                                     <label class="resize-field-label" for="width-px"><i class="bx bx-horizontal-center" aria-hidden="true"></i>Width</label>
                                     <div class="input-group resize-input-group">
-                                        <input type="number" class="form-control form-control-lg" id="width-px" min="1" placeholder="800" value="800" aria-describedby="width-addon">
+                                        <input type="number" class="form-control form-control-lg" id="width-px" min="1" step="1" placeholder="800" value="800" aria-describedby="width-addon">
                                         <span class="input-group-text" id="width-addon">px</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="resize-field-label" for="height-px"><i class="bx bx-vertical-center" aria-hidden="true"></i>Height</label>
                                     <div class="input-group resize-input-group">
-                                        <input type="number" class="form-control form-control-lg" id="height-px" min="1" placeholder="600" value="600" aria-describedby="height-addon">
+                                        <input type="number" class="form-control form-control-lg" id="height-px" min="1" step="1" placeholder="600" value="600" aria-describedby="height-addon">
                                         <span class="input-group-text" id="height-addon">px</span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <hr class="resize-inline-divider" aria-hidden="true">
-                            <p class="resize-section-title mb-2">Social media auto sizes</p>
-                            <p class="advanced-subtext mb-3">One click sets width and height for common placements. With <strong>Maintain aspect ratio</strong> on, your image scales to fit inside the box.</p>
-                            <div class="social-preset-grid social-preset-grid--workspace" role="group" aria-label="Social media size presets">
-                                <button type="button" class="social-preset-chip" data-preset-w="820" data-preset-h="312" title="Facebook page cover (display size)">
-                                    <span class="social-preset-chip__icon" aria-hidden="true"><i class="bx bxl-facebook"></i></span>
-                                    <span class="social-preset-chip__text">
-                                        <span class="social-preset-chip__label">Facebook Cover</span>
-                                        <span class="social-preset-chip__dims">820 × 312 px</span>
-                                    </span>
-                                </button>
-                                <button type="button" class="social-preset-chip" data-preset-w="1080" data-preset-h="1080" title="Instagram square feed post">
-                                    <span class="social-preset-chip__icon" aria-hidden="true"><i class="bx bxl-instagram"></i></span>
-                                    <span class="social-preset-chip__text">
-                                        <span class="social-preset-chip__label">Instagram Post</span>
-                                        <span class="social-preset-chip__dims">1080 × 1080 px</span>
-                                    </span>
-                                </button>
-                                <button type="button" class="social-preset-chip" data-preset-w="1280" data-preset-h="720" title="YouTube custom thumbnail (16:9)">
-                                    <span class="social-preset-chip__icon" aria-hidden="true"><i class="bx bxl-youtube"></i></span>
-                                    <span class="social-preset-chip__text">
-                                        <span class="social-preset-chip__label">YouTube Thumbnail</span>
-                                        <span class="social-preset-chip__dims">1280 × 720 px</span>
-                                    </span>
-                                </button>
                             </div>
                         </div>
                         <div id="percent-inputs" class="d-none mt-2">
