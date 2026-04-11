@@ -1226,6 +1226,7 @@
         .btn-resize:disabled {
             opacity: 0.4;
             cursor: not-allowed;
+            display: none;
         }
 
         .form-range::-webkit-slider-thumb { background: var(--image-resizer-accent); }
