@@ -974,8 +974,9 @@
             font-size: 0.95rem;
             font-weight: 700;
             color: var(--image-resizer-text);
-            margin-bottom: 0.75rem;
+            /* margin-bottom: 0.75rem; */
             letter-spacing: -0.02em;
+            margin-top: 30px;
         }
 
         .advanced-subtext {
