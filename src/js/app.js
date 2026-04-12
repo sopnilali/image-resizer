@@ -81,6 +81,10 @@ AOS.init({
     const qualityEl = document.getElementById('quality');
     const qualityLabel = document.getElementById('quality-label');
     const optimizeWeb = document.getElementById('optimize-web');
+    const stripMetaEl = document.getElementById('strip-meta');
+    const targetFileSizeEnable = document.getElementById('target-file-size-enable');
+    const targetFileSizeKb = document.getElementById('target-file-size-kb');
+    const targetFileSizeWrap = document.getElementById('target-file-size-wrap');
     const formatCards = document.querySelectorAll('.format-card');
     const bgSwatches = document.querySelectorAll('.bg-swatch');
     const baseName = document.getElementById('base-name');
@@ -93,6 +97,8 @@ AOS.init({
     const sumDims = document.getElementById('sum-dims');
     const sumFormat = document.getElementById('sum-format');
     const sumBg = document.getElementById('sum-bg');
+    const sumMeta = document.getElementById('sum-meta');
+    const sumTargetSize = document.getElementById('sum-target-size');
     const advancedToggle = document.getElementById('advanced-toggle');
     const advancedPanel = document.getElementById('advanced-panel');
     const advancedChevron = document.getElementById('advanced-chevron');
@@ -306,6 +312,15 @@ AOS.init({
         qualityEl.style.setProperty('--range-fill', pct + '%');
     }
 
+    function updateTargetFileSizeControls() {
+        const lossy = selectedMime === 'image/jpeg' || selectedMime === 'image/webp';
+        if (targetFileSizeWrap) targetFileSizeWrap.style.opacity = lossy ? '1' : '0.5';
+        if (targetFileSizeKb) {
+            const on = targetFileSizeEnable && targetFileSizeEnable.checked;
+            targetFileSizeKb.disabled = !lossy || !on;
+        }
+    }
+
     function updateQualityDisabled() {
         const lossless = selectedMime === 'image/png';
         qualityEl.disabled = lossless;
@@ -314,6 +329,7 @@ AOS.init({
         if (lossless) qualityLabel.textContent = 'N/A';
         else qualityLabel.textContent = qualityEl.value + '%';
         syncAdvancedQualityFill();
+        updateTargetFileSizeControls();
     }
 
     function updateSummary() {
@@ -343,6 +359,23 @@ AOS.init({
                 : 'Transparent (PNG/WebP)';
         } else {
             sumBg.textContent = bgMode === 'white' ? 'White' : 'Black';
+        }
+        if (sumMeta) {
+            sumMeta.textContent = stripMetaEl && stripMetaEl.checked
+                ? 'Stripped (recommended)'
+                : 'Canvas export (no EXIF)';
+        }
+        if (sumTargetSize) {
+            const lossy = selectedMime === 'image/jpeg' || selectedMime === 'image/webp';
+            const wantCap = targetFileSizeEnable && targetFileSizeEnable.checked;
+            if (wantCap && lossy) {
+                const kb = parseInt(targetFileSizeKb && targetFileSizeKb.value, 10);
+                sumTargetSize.textContent = !isNaN(kb) && kb >= 5 ? `≤ ${kb} KB` : 'Set max KB';
+            } else if (wantCap && !lossy) {
+                sumTargetSize.textContent = 'N/A for PNG';
+            } else {
+                sumTargetSize.textContent = 'Off';
+            }
         }
     }
 
@@ -457,6 +490,20 @@ AOS.init({
             syncAdvancedQualityFill();
         }
     });
+
+    if (stripMetaEl) {
+        stripMetaEl.addEventListener('change', updateSummary);
+    }
+    if (targetFileSizeEnable) {
+        targetFileSizeEnable.addEventListener('change', () => {
+            updateTargetFileSizeControls();
+            updateSummary();
+        });
+    }
+    if (targetFileSizeKb) {
+        targetFileSizeKb.addEventListener('input', updateSummary);
+        targetFileSizeKb.addEventListener('change', updateSummary);
+    }
 
     tabPixels.addEventListener('click', () => {
         mode = 'pixels';
@@ -768,8 +815,15 @@ AOS.init({
         return `${name}.${ext}`;
     }
 
-    function canvasToBlobPromise(mime) {
-        const q = mime === 'image/png' ? undefined : (parseInt(qualityEl.value, 10) || 90) / 100;
+    function canvasToBlobPromise(mime, qualityOverride) {
+        let q;
+        if (mime === 'image/png') {
+            q = undefined;
+        } else if (qualityOverride !== undefined && qualityOverride !== null && !Number.isNaN(qualityOverride)) {
+            q = Math.max(0.01, Math.min(0.99, qualityOverride));
+        } else {
+            q = (parseInt(qualityEl.value, 10) || 90) / 100;
+        }
         return new Promise((resolve, reject) => {
             canvas.toBlob(
                 (blob) => {
@@ -780,6 +834,36 @@ AOS.init({
                 q
             );
         });
+    }
+
+    async function encodeUnderMaxBytes(mime, maxBytes) {
+        const cap = Math.min(0.99, (parseInt(qualityEl.value, 10) || 90) / 100);
+        const first = await canvasToBlobPromise(mime, cap);
+        if (first.size <= maxBytes) return first;
+        let lo = 0.05;
+        let hi = cap;
+        let best = null;
+        for (let i = 0; i < 16; i++) {
+            const mid = (lo + hi) / 2;
+            const b = await canvasToBlobPromise(mime, mid);
+            if (b.size <= maxBytes) {
+                best = b;
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+        return best || canvasToBlobPromise(mime, 0.05);
+    }
+
+    async function exportResizedBlob(mime) {
+        const lossy = mime === 'image/jpeg' || mime === 'image/webp';
+        const kb = parseInt(targetFileSizeKb && targetFileSizeKb.value, 10);
+        const capOn = targetFileSizeEnable && targetFileSizeEnable.checked && lossy && !Number.isNaN(kb) && kb >= 5;
+        if (capOn) {
+            return encodeUnderMaxBytes(mime, kb * 1024);
+        }
+        return canvasToBlobPromise(mime);
     }
 
     function appendResultRow(tbody, serialNo, fileName, fileBytes, nw, nh, tw, th, formatText) {
@@ -913,12 +997,12 @@ AOS.init({
                     let mime = useMime;
                     let blob;
                     try {
-                        blob = await canvasToBlobPromise(mime);
+                        blob = await exportResizedBlob(mime);
                     } catch (err) {
                         if (mime !== 'image/jpeg') {
                             mime = 'image/jpeg';
                             fallbackJpeg = true;
-                            blob = await canvasToBlobPromise('image/jpeg');
+                            blob = await exportResizedBlob('image/jpeg');
                         } else {
                             throw err;
                         }
@@ -1008,6 +1092,7 @@ AOS.init({
 
     syncDimensionUnitUI();
     updateQualityDisabled();
+    updateTargetFileSizeControls();
     syncAdvancedQualityFill();
     updateSummary();
     previewFilename();

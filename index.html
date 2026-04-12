@@ -232,6 +232,14 @@
                                 <span class="summary-k">Background</span>
                                 <span class="summary-v" id="sum-bg">Transparent (PNG/WebP)</span>
                             </div>
+                            <div class="summary-row">
+                                <span class="summary-k">Metadata</span>
+                                <span class="summary-v" id="sum-meta">Stripped</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-k">Target file size</span>
+                                <span class="summary-v" id="sum-target-size">Off</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -258,14 +266,29 @@
                             </div>
 
                             <h3 class="advanced-block-title">Metadata Options</h3>
-                            <div class="advanced-check mb-4">
+                            <p class="advanced-subtext mb-2">Resized output is drawn on a canvas, so original EXIF/GPS is not copied. Keeping this on documents that exports stay free of embedded camera metadata.</p>
+                            <div class="advanced-check mb-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="strip-meta" checked disabled>
-                                    <label class="form-check-label" for="strip-meta">Strip Metadata (EXIF, GPS, etc.)</label>
+                                    <input class="form-check-input" type="checkbox" id="strip-meta" checked>
+                                    <label class="form-check-label" for="strip-meta">Strip metadata from export (recommended)</label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check mb-0">
                                     <input class="form-check-input" type="checkbox" id="optimize-web">
                                     <label class="form-check-label" for="optimize-web">Optimize Images for Web</label>
+                                </div>
+                            </div>
+
+                            <h3 class="advanced-block-title">Target File Size</h3>
+                            <p class="advanced-subtext mb-2" id="target-file-size-desc">For JPEG and WebP only: lowers quality as needed so each file stays under your limit. PNG is lossless, so this option does not apply.</p>
+                            <div class="advanced-check mb-1" id="target-file-size-wrap">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="target-file-size-enable">
+                                    <label class="form-check-label" for="target-file-size-enable">Limit maximum output file size</label>
+                                </div>
+                                <label class="resize-field-label mb-1" for="target-file-size-kb"><i class="bx bx-data" aria-hidden="true"></i>Max size (KB)</label>
+                                <div class="input-group resize-input-group">
+                                    <input type="number" class="form-control form-control-lg" id="target-file-size-kb" min="5" max="51200" value="250" step="5" aria-describedby="target-file-size-desc">
+                                    <span class="input-group-text">KB</span>
                                 </div>
                             </div>
 
