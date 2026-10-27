@@ -16,9 +16,9 @@ boost.json
 AGENTS.md
 CLAUDE.md
 
-bootstrap/cache/*.php
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-storage/logs/*
+bootstrap/cache
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/logs
 .phpunit.result.cache

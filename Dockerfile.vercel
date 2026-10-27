@@ -18,10 +18,14 @@ RUN composer install \
     --prefer-dist
 
 COPY . .
-RUN mkdir -p \
+# Clear any cached manifests from the build context; they can list dev-only
+# providers that are absent from this --no-dev install.
+RUN rm -f bootstrap/cache/*.php \
+    && mkdir -p \
         storage/framework/cache \
         storage/framework/sessions \
         storage/framework/views \
+        storage/logs \
         bootstrap/cache \
     && composer dump-autoload --no-dev --classmap-authoritative
 
