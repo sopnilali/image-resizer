@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMessage;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -22,7 +23,7 @@ class ContactController extends Controller
     /**
      * Validate the enquiry and email it to the configured inbox.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -42,13 +43,25 @@ class ContactController extends Controller
         } catch (Throwable $exception) {
             report($exception);
 
+            $errorMessage = 'Sorry, your message could not be sent right now. Please try again in a few minutes.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $errorMessage], 500);
+            }
+
             return back()
                 ->withInput()
-                ->with('error', 'Sorry, your message could not be sent right now. Please try again in a few minutes.');
+                ->with('error', $errorMessage);
+        }
+
+        $statusMessage = "Thanks, {$validated['name']}! Your message has been sent and we'll reply to {$validated['email']} soon.";
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $statusMessage]);
         }
 
         return redirect()
             ->route('contact')
-            ->with('status', "Thanks, {$validated['name']}! Your message has been sent and we'll reply to {$validated['email']} soon.");
+            ->with('status', $statusMessage);
     }
 }

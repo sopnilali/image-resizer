@@ -31,6 +31,42 @@ class ContactTest extends TestCase
         });
     }
 
+    public function test_contact_form_returns_json_success_for_ajax_submissions(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson(route('contact.store'), [
+            'name' => 'Sopnil Ali',
+            'email' => 'sopnil@example.com',
+            'subject' => 'General question',
+            'message' => 'I would like to know whether the resizer supports WebP exports.',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('message', fn (string $message): bool => str_contains($message, 'Sopnil Ali'));
+
+        Mail::assertSent(ContactMessage::class);
+    }
+
+    public function test_contact_form_returns_json_validation_errors_for_ajax_submissions(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson(route('contact.store'), [
+            'name' => '',
+            'email' => 'not-an-email',
+            'subject' => 'Unknown topic',
+            'message' => 'Too short.',
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['name', 'email', 'subject', 'message']);
+
+        Mail::assertNothingSent();
+    }
+
     public function test_contact_form_rejects_invalid_input(): void
     {
         Mail::fake();

@@ -36,7 +36,7 @@
                         <h2 class="section-heading">Send a message</h2>
                         <p class="section-copy">Fields marked with an asterisk are required.</p>
 
-                        <form method="POST" action="{{ route('contact.store') }}" novalidate>
+                        <form method="POST" action="{{ route('contact.store') }}" novalidate data-contact-form>
                             @csrf
 
                             <div class="row g-3">
@@ -88,7 +88,7 @@
 
                             <div class="contact-form-card__footer">
                                 <button type="submit" class="btn-site-primary">
-                                    <i class="bx bx-send" aria-hidden="true"></i>Send message
+                                    <i class="bx bx-send" aria-hidden="true"></i><span data-contact-submit-label>Send message</span>
                                 </button>
                                 <p class="contact-form-card__note">
                                     <i class="bx bx-lock-alt" aria-hidden="true"></i>
@@ -143,4 +143,9 @@
             </div>
         </section>
     </main>
+
+    <div id="toast-el" class="app-toast" role="alert" aria-live="polite">
+        <button type="button" class="toast-close" id="toast-close" aria-label="Dismiss">&times;</button>
+        <span id="toast-body"></span>
+    </div>
 @endsection
