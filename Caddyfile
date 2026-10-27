@@ -6,7 +6,7 @@
         try_files {path} index.php
     }
 
-    header /assets/* Cache-Control "public, max-age=31536000, immutable"
-    header /css/* Cache-Control "public, max-age=31536000, immutable"
-    header /js/* Cache-Control "public, max-age=31536000, immutable"
+    header /assets/* Cache-Control "public, max-age=3600"
+    header /css/* Cache-Control "public, max-age=3600"
+    header /js/* Cache-Control "public, max-age=3600"
 }
