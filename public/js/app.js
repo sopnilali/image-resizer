@@ -5,8 +5,6 @@
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const previewGrid = document.getElementById('file-preview-grid');
-    const heroSelectBtn = document.getElementById('hero-select-btn');
-    const heroWorkspaceBtn = document.getElementById('hero-workspace-btn');
     const footerSelectBtn = document.getElementById('footer-select-btn');
     const tabPixels = document.getElementById('tab-pixels');
     const tabPercent = document.getElementById('tab-percent');
@@ -532,20 +530,6 @@
 
     function openFilePicker() {
         fileInput.click();
-    }
-
-    if (heroSelectBtn) {
-        heroSelectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openFilePicker();
-        });
-    }
-
-    if (heroWorkspaceBtn) {
-        heroWorkspaceBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            (uploadSection || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
     }
 
     if (footerSelectBtn) {

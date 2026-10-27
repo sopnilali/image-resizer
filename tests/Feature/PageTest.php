@@ -11,7 +11,7 @@ class PageTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertViewIs('home')
-            ->assertSee('Resize images in pixels');
+            ->assertSee('Drag and drop your images here');
     }
 
     public function test_about_page_is_available(): void

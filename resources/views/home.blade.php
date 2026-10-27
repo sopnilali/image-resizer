@@ -3,88 +3,24 @@
 @section('content')
     <main class="container py-4 py-lg-5">
         <div class="image-resizer-hero mb-4 mb-lg-5" data-aos="fade-up" data-aos-duration="650">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-3">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Resize Image</li>
-                </ol>
-            </nav>
-            <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-                    <div class="image-resizer-hero-badge">
-                        <i class="bx bx-grid-alt"></i>
-                        Pixel-perfect SaaS feel
-                    </div>
+            <h1 class="visually-hidden">Image Resizer — resize images fast, private and precise</h1>
 
-                    <h1 class="display-5 fw-bold mb-3">
-                        Resize images in pixels <span class="text-gradient">fast, private & precise</span>
-                    </h1>
-
-                    <p class="mb-2" style="color: var(--image-resizer-text-muted); font-size: 1.05rem; line-height: 1.65;">
-                        Set exact <strong>Width x Height (px)</strong>, optionally lock aspect ratio, pick JPG / PNG / WebP, then export the batch. Everything runs client-side.
-                    </p>
-
-                    <div class="hero-feature-chips" aria-label="Key features">
-                        <span class="hero-feature-chip"><i class="bx bx-shield-check"></i>100% on-device</span>
-                        <span class="hero-feature-chip"><i class="bx bx-ruler"></i>Exact pixel bounds</span>
-                        <span class="hero-feature-chip"><i class="bx bx-code-alt"></i>Instant JPG/PNG/WebP</span>
-                    </div>
-
-                    <div class="hero-cta d-flex gap-3 flex-wrap">
-                        <button type="button" id="hero-select-btn" class="btn hero-btn-primary">
-                            <i class="bx bx-cloud-upload me-2"></i>Select images
-                        </button>
-                        <a href="#upload-section" id="hero-workspace-btn" class="btn hero-btn-outline">
-                            <i class="bx bx-slider me-2"></i>Set dimensions
-                        </a>
-                    </div>
-
-                    <p class="small mb-0 mt-3">
-                        <a href="#" class="text-decoration-none fw-semibold" style="color: var(--image-resizer-accent);">
-                            <i class="bx bx-edit-alt me-1"></i>Need cropping, filters, or layers? Use a desktop editor.
-                        </a>
-                    </p>
-                </div>
-
-                <div class="col-lg-5">
-                    <div class="hero-mock" aria-hidden="true">
-                        <div class="hero-mock-inner">
-                            <div class="hero-mock-row">
-                                <div class="hero-mock-card">
-                                    <div class="hero-mock-card-head">
-                                        <span class="hero-mock-pill">Before</span>
-                                        <span class="hero-mock-dims">1920 × 1080 px</span>
-                                    </div>
-                                    <div class="hero-mock-preview"></div>
-                                </div>
-                                <div class="hero-mock-arrow">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                </div>
-                                <div class="hero-mock-card">
-                                    <div class="hero-mock-card-head">
-                                        <span class="hero-mock-pill">After</span>
-                                        <span class="hero-mock-dims">800 × 600 px</span>
-                                    </div>
-                                    <div class="hero-mock-preview hero-mock-preview--after"></div>
-                                </div>
-                            </div>
+            <div class="hero-tool">
+                <div class="hero-upload-card">
+                    <div class="upload-section" id="upload-section">
+                        <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Upload images">
+                            <i class="bx bx-cloud-upload drop-zone-icon" aria-hidden="true"></i>
+                            <p class="drop-zone-hint mb-0">Drag and drop your images here, or <span class="drop-zone-accent">click to select</span> files from your computer.</p>
+                            <input type="file" id="file-input" accept="image/*" multiple>
                         </div>
+                        <div class="file-preview-grid" id="file-preview-grid" hidden></div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="upload-section" id="upload-section" data-aos="fade-up" data-aos-delay="50">
-            <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Upload images">
-                <i class="bx bx-cloud-upload drop-zone-icon" aria-hidden="true"></i>
-                <p class="drop-zone-hint mb-0">Drag and drop your images here, or <span class="drop-zone-accent">click to select</span> files from your computer.</p>
-                <input type="file" id="file-input" accept="image/*" multiple>
-            </div>
-            <div class="file-preview-grid" id="file-preview-grid" hidden></div>
         </div>
 
         <div class="image-resizer-section-title px-1">Workspace</div>
-        <div class="resizer-card p-4 p-lg-5 mb-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="resizer-card p-4 p-lg-5 mb-4" id="workspace" data-aos="fade-up" data-aos-delay="80">
             <div class="resize-settings-top">
                 <div class="resize-settings-title-wrap">
                     <div class="resize-settings-icon" aria-hidden="true"><i class="bx bx-slider"></i></div>

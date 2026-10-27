@@ -166,7 +166,9 @@
         });
 
         document.addEventListener('click', (event) => {
-            if (!header || !header.contains(event.target)) {
+            // Use the original dispatch path because the toggle icon is replaced
+            // while the click is still bubbling, which detaches the event target.
+            if (!header || !event.composedPath().includes(header)) {
                 closeMobileNav();
             }
         });
