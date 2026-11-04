@@ -33,6 +33,20 @@
     const namePreview = document.getElementById('name-preview');
     const btnResize = document.getElementById('btn-resize');
     const btnResizeText = document.getElementById('btn-resize-text');
+    const btnResizeIcon = document.getElementById('btn-resize-icon');
+    const modeResizeBtn = document.getElementById('mode-resize');
+    const modeReduceBtn = document.getElementById('mode-reduce');
+    const resizeSettingsPanel = document.getElementById('resize-settings-panel');
+    const reduceSettingsPanel = document.getElementById('reduce-settings-panel');
+    const settingsHeading = document.getElementById('settings-heading');
+    const settingsSub = document.getElementById('settings-sub');
+    const resizeTabsWrap = document.getElementById('resize-tabs-wrap');
+    const advQualityBlock = document.getElementById('adv-quality-block');
+    const advTargetSizeBlock = document.getElementById('adv-target-size-block');
+    const reduceQuality = document.getElementById('reduce-quality');
+    const reduceQualityLabel = document.getElementById('reduce-quality-label');
+    const reduceMaxEnable = document.getElementById('reduce-max-enable');
+    const reduceMaxKb = document.getElementById('reduce-max-kb');
     const sumMethod = document.getElementById('sum-method');
     const sumDims = document.getElementById('sum-dims');
     const sumFormat = document.getElementById('sum-format');
@@ -52,6 +66,8 @@
     const CSS_PPI = 96;
 
     let mode = 'pixels';
+    /** @type {'resize'|'reduce'} */
+    let workspaceMode = 'resize';
     /** @type {'px'|'in'|'cm'} */
     let dimensionUnit = dimUnitEl && dimUnitEl.value ? dimUnitEl.value : 'px';
     let selectedMime = 'image/jpeg';
@@ -110,6 +126,7 @@
 
     function applyPixelPreset(w, h) {
         // Keep the preset as a "pixel bounds" box (output may be smaller when "Maintain aspect ratio" is enabled).
+        if (workspaceMode !== 'resize') setWorkspaceMode('resize');
         mode = 'pixels';
         tabPixels.classList.add('active');
         tabPercent.classList.remove('active');
@@ -185,7 +202,7 @@
 
         if (items.length === 0) {
             previewGrid.hidden = true;
-        } else if (maintainRatio.checked && mode === 'pixels') {
+        } else if (workspaceMode === 'resize' && maintainRatio.checked && mode === 'pixels') {
             const nw = items[0].img.naturalWidth;
             const nh = items[0].img.naturalHeight;
             widthPx.value = formatDimValue(fromPixels(nw, dimensionUnit), dimensionUnit);
@@ -252,6 +269,89 @@
         qualityEl.style.setProperty('--range-fill', pct + '%');
     }
 
+    function syncReduceQualityFill() {
+        if (!reduceQuality) return;
+        const min = parseFloat(reduceQuality.min) || 0;
+        const max = parseFloat(reduceQuality.max) || 100;
+        const val = parseFloat(reduceQuality.value) || 0;
+        const pct = max <= min ? 0 : ((val - min) / (max - min)) * 100;
+        reduceQuality.style.setProperty('--range-fill', pct + '%');
+    }
+
+    function reduceQualityPercent() {
+        const val = parseInt(reduceQuality && reduceQuality.value, 10);
+        return Math.max(5, Math.min(100, Number.isNaN(val) ? 75 : val));
+    }
+
+    function reduceMaxBytes() {
+        if (!reduceMaxEnable || !reduceMaxEnable.checked) return null;
+        const kb = parseInt(reduceMaxKb && reduceMaxKb.value, 10);
+        return !Number.isNaN(kb) && kb >= 5 ? kb * 1024 : null;
+    }
+
+    function syncReduceControls() {
+        if (reduceQualityLabel) reduceQualityLabel.textContent = reduceQualityPercent() + '%';
+        if (reduceMaxKb) reduceMaxKb.disabled = !(reduceMaxEnable && reduceMaxEnable.checked);
+        syncReduceQualityFill();
+    }
+
+    function setWorkspaceMode(next) {
+        workspaceMode = next === 'reduce' ? 'reduce' : 'resize';
+        const isReduce = workspaceMode === 'reduce';
+
+        [modeResizeBtn, modeReduceBtn].forEach((btn) => {
+            if (!btn) return;
+            const isActive = btn.dataset.workspaceMode === workspaceMode;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        if (resizeSettingsPanel) resizeSettingsPanel.classList.toggle('d-none', isReduce);
+        if (reduceSettingsPanel) reduceSettingsPanel.classList.toggle('d-none', !isReduce);
+        if (resizeTabsWrap) resizeTabsWrap.classList.toggle('d-none', isReduce);
+        if (advQualityBlock) advQualityBlock.classList.toggle('d-none', isReduce);
+        if (advTargetSizeBlock) advTargetSizeBlock.classList.toggle('d-none', isReduce);
+
+        if (settingsHeading) settingsHeading.textContent = isReduce ? 'Reduce settings' : 'Resize settings';
+        if (settingsSub) {
+            settingsSub.textContent = isReduce
+                ? 'Keep the original dimensions and shrink the file size of every image in the batch with quality control or a maximum size cap.'
+                : 'Set target size in pixels, inches, centimeters, or as a percentage scale, then lock aspect ratio or cap upscaling before you run the batch.';
+        }
+
+        if (isReduce && selectedMime === 'image/png') {
+            showToast('PNG is lossless — pick JPEG or WebP output to shrink file size.', 'info');
+        }
+
+        syncReduceControls();
+        updateBtn();
+        updateSummary();
+        previewFilename();
+    }
+
+    if (modeResizeBtn) {
+        modeResizeBtn.addEventListener('click', () => setWorkspaceMode('resize'));
+    }
+    if (modeReduceBtn) {
+        modeReduceBtn.addEventListener('click', () => setWorkspaceMode('reduce'));
+    }
+    if (reduceQuality) {
+        reduceQuality.addEventListener('input', () => {
+            syncReduceControls();
+            updateSummary();
+        });
+    }
+    if (reduceMaxEnable) {
+        reduceMaxEnable.addEventListener('change', () => {
+            syncReduceControls();
+            updateSummary();
+        });
+    }
+    if (reduceMaxKb) {
+        reduceMaxKb.addEventListener('input', updateSummary);
+        reduceMaxKb.addEventListener('change', updateSummary);
+    }
+
     function updateTargetFileSizeControls() {
         const lossy = selectedMime === 'image/jpeg' || selectedMime === 'image/webp';
         if (targetFileSizeWrap) targetFileSizeWrap.style.opacity = lossy ? '1' : '0.5';
@@ -273,6 +373,38 @@
     }
 
     function updateSummary() {
+        const lossy = selectedMime === 'image/jpeg' || selectedMime === 'image/webp';
+
+        sumFormat.textContent = getSelectedFormatLabel();
+        if (bgMode === 'transparent') {
+            sumBg.textContent = selectedMime === 'image/jpeg'
+                ? 'Transparent → white fill for JPEG'
+                : 'Transparent (PNG/WebP)';
+        } else {
+            sumBg.textContent = bgMode === 'white' ? 'White' : 'Black';
+        }
+        if (sumMeta) {
+            sumMeta.textContent = stripMetaEl && stripMetaEl.checked
+                ? 'Stripped (recommended)'
+                : 'Canvas export (no EXIF)';
+        }
+
+        if (workspaceMode === 'reduce') {
+            sumMethod.textContent = 'File size reduction';
+            sumDims.textContent = 'Original dimensions kept';
+            if (sumTargetSize) {
+                const maxBytes = reduceMaxBytes();
+                if (!lossy) {
+                    sumTargetSize.textContent = 'N/A for PNG';
+                } else if (maxBytes) {
+                    sumTargetSize.textContent = `≤ ${Math.round(maxBytes / 1024)} KB each`;
+                } else {
+                    sumTargetSize.textContent = `${reduceQualityPercent()}% quality`;
+                }
+            }
+            return;
+        }
+
         sumMethod.textContent = mode === 'pixels' ? 'Pixels' : 'Percentage';
         if (mode === 'pixels') {
             const wVal = parseFloat(widthPx.value);
@@ -292,21 +424,7 @@
         } else {
             sumDims.textContent = `${scalePercent.value || '—'}% of each image`;
         }
-        sumFormat.textContent = getSelectedFormatLabel();
-        if (bgMode === 'transparent') {
-            sumBg.textContent = selectedMime === 'image/jpeg'
-                ? 'Transparent → white fill for JPEG'
-                : 'Transparent (PNG/WebP)';
-        } else {
-            sumBg.textContent = bgMode === 'white' ? 'White' : 'Black';
-        }
-        if (sumMeta) {
-            sumMeta.textContent = stripMetaEl && stripMetaEl.checked
-                ? 'Stripped (recommended)'
-                : 'Canvas export (no EXIF)';
-        }
         if (sumTargetSize) {
-            const lossy = selectedMime === 'image/jpeg' || selectedMime === 'image/webp';
             const wantCap = targetFileSizeEnable && targetFileSizeEnable.checked;
             if (wantCap && lossy) {
                 const kb = parseInt(targetFileSizeKb && targetFileSizeKb.value, 10);
@@ -329,7 +447,9 @@
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
         let dimPart = 'WxH';
-        if (mode === 'pixels') {
+        if (workspaceMode === 'reduce') {
+            dimPart = 'original-size';
+        } else if (mode === 'pixels') {
             const { targetW, targetH } = readTargetBoxPixels();
             if (targetW > 0 && targetH > 0) dimPart = `${targetW}x${targetH}`;
         } else {
@@ -345,8 +465,14 @@
 
     function updateBtn() {
         const n = items.length;
+        const isReduce = workspaceMode === 'reduce';
         btnResize.disabled = n === 0;
-        btnResizeText.textContent = n === 1 ? 'Resize 1 Image' : `Resize ${n} Images`;
+        const verb = isReduce ? 'Reduce' : 'Resize';
+        btnResizeText.textContent = n === 1 ? `${verb} 1 Image` : `${verb} ${n} Images`;
+        if (btnResizeIcon) {
+            btnResizeIcon.classList.toggle('bx-expand-alt', !isReduce);
+            btnResizeIcon.classList.toggle('bx-collapse-alt', isReduce);
+        }
     }
 
     function updateDownloadAllBtn() {
@@ -428,6 +554,11 @@
             qualityEl.value = String(Math.min(parseInt(qualityEl.value, 10), 82));
             qualityLabel.textContent = qualityEl.value + '%';
             syncAdvancedQualityFill();
+            if (reduceQuality) {
+                reduceQuality.value = String(Math.min(reduceQualityPercent(), 82));
+                syncReduceControls();
+                updateSummary();
+            }
         }
     });
 
@@ -620,7 +751,7 @@
                 previewGrid.hidden = false;
                 pending--;
                 if (pending === 0) {
-                    if (maintainRatio.checked && mode === 'pixels') {
+                    if (workspaceMode === 'resize' && maintainRatio.checked && mode === 'pixels') {
                         const nw = items[0].img.naturalWidth;
                         const nh = items[0].img.naturalHeight;
                         widthPx.value = formatDimValue(fromPixels(nw, dimensionUnit), dimensionUnit);
@@ -669,6 +800,9 @@
     }
 
     function computeTargetSize(nw, nh) {
+        if (workspaceMode === 'reduce') {
+            return { tw: Math.max(1, nw), th: Math.max(1, nh) };
+        }
         let tw, th;
         if (mode === 'percent') {
             const p = Math.max(1, Math.min(500, parseInt(scalePercent.value, 10) || 100)) / 100;
@@ -762,8 +896,11 @@
         });
     }
 
-    async function encodeUnderMaxBytes(mime, maxBytes) {
-        const cap = Math.min(0.99, (parseInt(qualityEl.value, 10) || 90) / 100);
+    async function encodeUnderMaxBytes(mime, maxBytes, startQualityPercent) {
+        const startQuality = Number.isNaN(parseInt(startQualityPercent, 10))
+            ? (parseInt(qualityEl.value, 10) || 90)
+            : parseInt(startQualityPercent, 10);
+        const cap = Math.min(0.99, Math.max(0.05, startQuality / 100));
         const first = await canvasToBlobPromise(mime, cap);
         if (first.size <= maxBytes) return first;
         let lo = 0.05;
@@ -782,6 +919,18 @@
         return best || canvasToBlobPromise(mime, 0.05);
     }
 
+    async function exportReducedBlob(mime) {
+        const lossy = mime === 'image/jpeg' || mime === 'image/webp';
+        if (!lossy) {
+            return canvasToBlobPromise(mime);
+        }
+        const maxBytes = reduceMaxBytes();
+        if (maxBytes) {
+            return encodeUnderMaxBytes(mime, maxBytes, reduceQualityPercent());
+        }
+        return canvasToBlobPromise(mime, reduceQualityPercent() / 100);
+    }
+
     async function exportResizedBlob(mime) {
         const lossy = mime === 'image/jpeg' || mime === 'image/webp';
         const kb = parseInt(targetFileSizeKb && targetFileSizeKb.value, 10);
@@ -790,6 +939,10 @@
             return encodeUnderMaxBytes(mime, kb * 1024);
         }
         return canvasToBlobPromise(mime);
+    }
+
+    function exportCurrentBlob(mime) {
+        return workspaceMode === 'reduce' ? exportReducedBlob(mime) : exportResizedBlob(mime);
     }
 
     function appendResultRow(tbody, serialNo, fileName, fileBytes, nw, nh, tw, th, formatText) {
@@ -923,12 +1076,12 @@
                     let mime = useMime;
                     let blob;
                     try {
-                        blob = await exportResizedBlob(mime);
+                        blob = await exportCurrentBlob(mime);
                     } catch (err) {
                         if (mime !== 'image/jpeg') {
                             mime = 'image/jpeg';
                             fallbackJpeg = true;
-                            blob = await exportResizedBlob('image/jpeg');
+                            blob = await exportCurrentBlob('image/jpeg');
                         } else {
                             throw err;
                         }
@@ -963,7 +1116,7 @@
                 showToast('Some images could not be processed.');
             }
         } catch (err) {
-            showToast(err.message || 'Resize failed.');
+            showToast(err.message || 'Processing failed.');
         } finally {
             btnResize.disabled = false;
             btnResizeText.textContent = prevText;
@@ -972,14 +1125,16 @@
     }
 
     btnResize.addEventListener('click', () => {
-        showToast('Processing images… please wait.', 'info');
+        const action = workspaceMode === 'reduce' ? 'Reducing' : 'Resizing';
+        showToast(action + ' images… please wait.', 'info');
         processAndResize()
             .then(() => {
                 if (processedOutputs.length) {
-                    showToast('Resize complete. Use Download buttons or ZIP Download.', 'success');
+                    const done = workspaceMode === 'reduce' ? 'Reduce' : 'Resize';
+                    showToast(done + ' complete. Use Download buttons or ZIP Download.', 'success');
                 }
             })
-            .catch((e) => showToast(e.message || 'Resize failed.'));
+            .catch((e) => showToast(e.message || 'Processing failed.'));
     });
 
     if (btnDownloadAll) {
@@ -1002,7 +1157,7 @@
                 const url = URL.createObjectURL(zipBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'resized-images.zip';
+                a.download = workspaceMode === 'reduce' ? 'reduced-images.zip' : 'resized-images.zip';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1020,6 +1175,7 @@
     updateQualityDisabled();
     updateTargetFileSizeControls();
     syncAdvancedQualityFill();
+    syncReduceControls();
     updateSummary();
     previewFilename();
     updateBtn();

@@ -21,15 +21,32 @@
 
         <div class="image-resizer-section-title px-1">Workspace</div>
         <div class="resizer-card p-4 p-lg-5 mb-4" id="workspace" data-aos="fade-up" data-aos-delay="80">
+            <div class="workspace-mode-switch" role="tablist" aria-label="Workspace mode">
+                <button type="button" class="workspace-mode-btn active" id="mode-resize" data-workspace-mode="resize" role="tab" aria-selected="true">
+                    <span class="workspace-mode-icon" aria-hidden="true"><i class="bx bx-expand-alt"></i></span>
+                    <span class="workspace-mode-text">
+                        <span class="workspace-mode-name">Resize</span>
+                        <span class="workspace-mode-desc">Change width &amp; height</span>
+                    </span>
+                </button>
+                <button type="button" class="workspace-mode-btn" id="mode-reduce" data-workspace-mode="reduce" role="tab" aria-selected="false">
+                    <span class="workspace-mode-icon" aria-hidden="true"><i class="bx bx-collapse-alt"></i></span>
+                    <span class="workspace-mode-text">
+                        <span class="workspace-mode-name">Reduce</span>
+                        <span class="workspace-mode-desc">Shrink file size in bulk</span>
+                    </span>
+                </button>
+            </div>
+
             <div class="resize-settings-top">
                 <div class="resize-settings-title-wrap">
                     <div class="resize-settings-icon" aria-hidden="true"><i class="bx bx-slider"></i></div>
                     <div>
-                        <h2 class="resize-settings-heading">Resize settings</h2>
-                        <p class="resize-settings-sub">Set target size in pixels, inches, centimeters, or as a percentage scale, then lock aspect ratio or cap upscaling before you run the batch.</p>
+                        <h2 class="resize-settings-heading" id="settings-heading">Resize settings</h2>
+                        <p class="resize-settings-sub" id="settings-sub">Set target size in pixels, inches, centimeters, or as a percentage scale, then lock aspect ratio or cap upscaling before you run the batch.</p>
                     </div>
                 </div>
-                <div class="resize-tabs-wrap" role="tablist" aria-label="Resize mode">
+                <div class="resize-tabs-wrap" id="resize-tabs-wrap" role="tablist" aria-label="Resize mode">
                     <button type="button" class="tab-pill active" role="tab" aria-selected="true" data-mode="pixels" id="tab-pixels"><i class="bx bx-grid-alt" aria-hidden="true"></i>By pixels</button>
                     <button type="button" class="tab-pill" role="tab" aria-selected="false" data-mode="percent" id="tab-percent"><i class="bx bx-trending-up" aria-hidden="true"></i>By %</button>
                 </div>
@@ -37,7 +54,7 @@
 
             <div class="row g-4 align-items-stretch">
                 <div class="col-lg-7">
-                    <div class="resize-workspace-inner h-100">
+                    <div class="resize-workspace-inner h-100" id="resize-settings-panel">
                         <p class="resize-section-title mb-0">Target dimensions</p>
                         <div id="pixel-inputs">
                             <div class="mt-2 mb-3">
@@ -96,6 +113,42 @@
                             </label>
                         </div>
                     </div>
+
+                    <div class="resize-workspace-inner h-100 d-none" id="reduce-settings-panel">
+                        <p class="resize-section-title mb-0">Compression settings</p>
+                        <div class="reduce-note mt-3">
+                            <i class="bx bx-info-circle" aria-hidden="true"></i>
+                            <span>Images keep their original dimensions. Each file is re-encoded at a lower quality — or under a maximum size — so the whole batch gets lighter.</span>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="resize-field-label" for="reduce-quality"><i class="bx bx-tachometer" aria-hidden="true"></i>Quality</label>
+                            <div class="advanced-quality-row mb-2">
+                                <div class="advanced-range-track">
+                                    <input type="range" class="advanced-range" id="reduce-quality" min="5" max="100" value="75" step="5" aria-valuemin="5" aria-valuemax="100" aria-valuenow="75">
+                                </div>
+                                <span class="advanced-quality-value" id="reduce-quality-label">75%</span>
+                            </div>
+                            <p class="advanced-subtext mb-0">Lower values shrink the file more. 70–80% usually looks identical to the eye.</p>
+                        </div>
+
+                        <div class="resize-options-shell">
+                            <p class="resize-section-title">Maximum file size</p>
+                            <label class="resize-option-card mb-3" for="reduce-max-enable">
+                                <input class="form-check-input" type="checkbox" id="reduce-max-enable">
+                                <span class="resize-option-body">
+                                    <span class="resize-option-title">Cap every image</span>
+                                    <span class="resize-option-desc">Automatically lower quality further so no file exceeds the limit below.</span>
+                                </span>
+                            </label>
+                            <label class="resize-field-label mb-1" for="reduce-max-kb"><i class="bx bx-data" aria-hidden="true"></i>Max size per image</label>
+                            <div class="input-group resize-input-group">
+                                <input type="number" class="form-control form-control-lg" id="reduce-max-kb" min="5" max="51200" value="250" step="5" disabled>
+                                <span class="input-group-text">KB</span>
+                            </div>
+                            <p class="advanced-subtext mb-0 mt-2 small" id="reduce-max-hint">Works with JPEG and WebP output. PNG is lossless — choose JPEG or WebP to shrink PNG files.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-5">
                     <div class="summary-panel h-100">
@@ -144,13 +197,15 @@
                 <div class="collapse-inner p-3 p-lg-4">
                     <div class="row g-4 g-xl-5">
                         <div class="col-lg-6">
-                            <h3 class="advanced-block-title">Quality Settings</h3>
-                            <p class="advanced-subtext mb-2">Image Quality</p>
-                            <div class="advanced-quality-row mb-4">
-                                <div class="advanced-range-track">
-                                    <input type="range" class="advanced-range" id="quality" min="0" max="100" value="100" step="5" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                            <div id="adv-quality-block">
+                                <h3 class="advanced-block-title">Quality Settings</h3>
+                                <p class="advanced-subtext mb-2">Image Quality</p>
+                                <div class="advanced-quality-row mb-4">
+                                    <div class="advanced-range-track">
+                                        <input type="range" class="advanced-range" id="quality" min="0" max="100" value="100" step="5" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                                    </div>
+                                    <span class="advanced-quality-value" id="quality-label">100%</span>
                                 </div>
-                                <span class="advanced-quality-value" id="quality-label">100%</span>
                             </div>
 
                             <h3 class="advanced-block-title">Metadata Options</h3>
@@ -166,17 +221,19 @@
                                 </div>
                             </div>
 
-                            <h3 class="advanced-block-title">Target File Size</h3>
-                            <p class="advanced-subtext mb-2" id="target-file-size-desc">For JPEG and WebP only: lowers quality as needed so each file stays under your limit. PNG is lossless, so this option does not apply.</p>
-                            <div class="advanced-check mb-1" id="target-file-size-wrap">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="target-file-size-enable">
-                                    <label class="form-check-label" for="target-file-size-enable">Limit File Size</label>
-                                </div>
-                                <label class="resize-field-label mb-1" for="target-file-size-kb"><i class="bx bx-data" aria-hidden="true"></i>Max size (KB)</label>
-                                <div class="input-group resize-input-group">
-                                    <input type="number" class="form-control form-control-lg" id="target-file-size-kb" min="5" max="51200" value="250" step="5" aria-describedby="target-file-size-desc">
-                                    <span class="input-group-text">KB</span>
+                            <div id="adv-target-size-block">
+                                <h3 class="advanced-block-title">Target File Size</h3>
+                                <p class="advanced-subtext mb-2" id="target-file-size-desc">For JPEG and WebP only: lowers quality as needed so each file stays under your limit. PNG is lossless, so this option does not apply.</p>
+                                <div class="advanced-check mb-1" id="target-file-size-wrap">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="target-file-size-enable">
+                                        <label class="form-check-label" for="target-file-size-enable">Limit File Size</label>
+                                    </div>
+                                    <label class="resize-field-label mb-1" for="target-file-size-kb"><i class="bx bx-data" aria-hidden="true"></i>Max size (KB)</label>
+                                    <div class="input-group resize-input-group">
+                                        <input type="number" class="form-control form-control-lg" id="target-file-size-kb" min="5" max="51200" value="250" step="5" aria-describedby="target-file-size-desc">
+                                        <span class="input-group-text">KB</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -250,7 +307,7 @@
 
             <div class="text-center pt-4 mt-2">
                 <button type="button" class="btn btn-resize" id="btn-resize" disabled>
-                    <i class="bx bx-expand-alt me-2"></i><span id="btn-resize-text">Resize 0 Images</span>
+                    <i class="bx bx-expand-alt me-2" id="btn-resize-icon" aria-hidden="true"></i><span id="btn-resize-text">Resize 0 Images</span>
                 </button>
             </div>
         </div>
