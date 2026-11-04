@@ -5,7 +5,6 @@
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const previewGrid = document.getElementById('file-preview-grid');
-    const footerSelectBtn = document.getElementById('footer-select-btn');
     const tabPixels = document.getElementById('tab-pixels');
     const tabPercent = document.getElementById('tab-percent');
     const pixelInputs = document.getElementById('pixel-inputs');
@@ -661,13 +660,6 @@
 
     function openFilePicker() {
         fileInput.click();
-    }
-
-    if (footerSelectBtn) {
-        footerSelectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openFilePicker();
-        });
     }
 
     dropZone.addEventListener('click', (e) => {

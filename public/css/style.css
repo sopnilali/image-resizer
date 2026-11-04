@@ -2577,6 +2577,7 @@
             line-height: 1;
             box-shadow: 0 14px 34px rgba(99, 102, 241, 0.35), 0 2px 8px rgba(0, 0, 0, 0.28);
             cursor: pointer;
+            text-decoration: none;
             transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
             -webkit-tap-highlight-color: transparent;
         }

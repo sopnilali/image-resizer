@@ -347,10 +347,10 @@
         <span id="toast-body"></span>
     </div>
 
-    <button type="button" class="sticky-upload-btn" id="footer-select-btn" aria-label="Select images to resize" title="Select images">
+    <a href="#upload-section" class="sticky-upload-btn" id="footer-select-btn" aria-label="Go to the image upload section" title="Select images">
         <i class="bx bx-cloud-upload" aria-hidden="true"></i>
         <span class="sticky-upload-label">Select images</span>
-    </button>
+    </a>
 
     <canvas id="work-canvas" hidden></canvas>
 @endsection
